@@ -1,12 +1,47 @@
 <!doctype html>
 <html>
+
 <head>
-<meta charset="utf-8" />
-<title>SB69 Score Viewer</title>
-<link rel="stylesheet" href="css/viewer.css" />
-<script src="js/SBRScript.js"></script>
-<script src="js/SBRSViewer.js"></script>
+  <meta charset="utf-8" />
+  <title>SB69 Score Viewer</title>
+  <link rel="stylesheet" href="css/viewer.css" />
+  <script src="js/SBRScript.js"></script>
+  <script src="js/SBRSViewer.js"></script>
 </head>
+
 <body>
+  <div id="title">No Title ★-</div>
+  <div id="info">
+    <ul>
+      <li id="info-combo" class="type-both"><span class="value">-</span></li>
+      <li id="info-marker" class="type-both"><span class="value">-</span></li>
+      <li id="info-fevercombo" class="type-score"><span class="value">-</span></li>
+      <li id="info-fevergauge" class="type-score"><span class="value">-</span></li>
+      <li id="info-bossattack" class="type-boss"><span class="value">-</span></li>
+      <li id="info-playercombo" class="type-boss"><span class="value">-</span></li>
+      <li id="info-bosscombo" class="type-boss"><span class="value">-</span></li>
+      <li id="info-time" class="type-both"><span class="value">-</span></li>
+    </ul>
+  </div>
+  <div id="view"></div>
+  <div id="option">
+    <fieldset>
+      <input type="radio" id="stage-type-score" name="stage-type" />
+      <label for="stage-type-score">スコアアタック</label>
+      <input type="radio" id="stage-type-boss" name="stage-type" />
+      <label for="stage-type-boss">BOSSバトル</label>
+    </fieldset>
+    <fieldset class="type-score">
+      <input type="checkbox" id="option-skill-fever" />
+      <label for="option-skill-fever">フィーバーゲージがたまりやすくなる</label>
+    </fieldset>
+    <fieldset class="type-boss">
+      <input type="checkbox" id="option-skill-bossattackfrequently" />
+      <label for="option-skill-bossattackfrequently">ボスの攻撃頻度を下げる</label>
+      <input type="checkbox" id="option-skill-bossattacktime" />
+      <label for="option-skill-bossattacktime">ボスの攻撃時間が短くなる</label>
+    </fieldset>
+  </div>
 </body>
+
 </html>
