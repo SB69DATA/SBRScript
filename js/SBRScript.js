@@ -263,7 +263,7 @@ var SBRS = (function() {
 
       xhr.send();
       sbrs.readyState = 3;
-      if (xhr.status === "200") {
+      if (xhr.status === 200) {
         SBRS.parse(xhr.responseText);
         if (callback && typeof callback.success === "function") {
           callback.success();
@@ -367,7 +367,7 @@ var SBRS = (function() {
       if (line.length === 0) {
         sbrScriptArray.splice(i, 1);
         i--;
-        len--;
+        iLen--;
       } else {
 
         if (line.charAt(0) !== "#") {
@@ -375,10 +375,10 @@ var SBRS = (function() {
           if (line.substr(1).indexOf(",") !== -1) {
             var commaIndex = line.substr(1).indexOf(",") + 1;
             sbrScriptArray.splice(i + 1, 0, ",");
-            len++;
+            iLen++;
             if (line.substr(commaIndex).length !== 1) {
               sbrScriptArray.splice(i + 2, 0, line.substr(commaIndex + 1));
-              len++;
+              iLen++;
             }
             line = line.substr(0, commaIndex);
           }
@@ -387,7 +387,7 @@ var SBRS = (function() {
             for (var j = 1, jLen = Math.ceil(line.length / laneCount); j < jLen; j++) {
               var str = (line.substr(j * laneCount, laneCount) + blankLane).substr(0, laneCount);
               sbrScriptArray.splice(i + j, 0, str);
-              len++;
+              iLen++;
             }
             line = line.substr(0, laneCount);
           }
@@ -401,7 +401,7 @@ var SBRS = (function() {
               var blankLine = blankLane.substr(0, laneCount);
               sbrScriptArray.splice(i, 0, blankLine);
               i++;
-              len++;
+              iLen++;
             }
             lineCount = 0;
           }
