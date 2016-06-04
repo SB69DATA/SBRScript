@@ -9,7 +9,7 @@ var SBRS = (function() {
   function initSbrs() {
     sbrs = {};
     sbrs.url = ""; // sbrsファイルのURL
-    sbrs.title = "no title"; // 曲名
+    sbrs.title = "No Title"; // 曲名
     sbrs.artist = ""; // アーティスト
     sbrs.sound = ""; // 音声ファイル名
     sbrs.soundUrl = ""; // 音声ファイルのURL
@@ -260,7 +260,6 @@ var SBRS = (function() {
     // 同期読み込み
     if (!async) {
 
-
       xhr.send();
       sbrs.readyState = 3;
       if (xhr.status === 200) {
@@ -269,14 +268,14 @@ var SBRS = (function() {
           callback.success();
         }
       } else {
-        console.error("譜面の読み込みに失敗しました");
+        console.error("譜面の読み込みに失敗しました(url:%s)", sbrScriptUrl);
         if (callback && typeof callback.error === "function") {
           callback.error();
         }
       }
+      
       // 非同期読み込み
     } else {
-
 
       xhr.addEventListener("readystatechange", function() {
         sbrs.readyState = xhr.readyState;
@@ -289,15 +288,25 @@ var SBRS = (function() {
           case 4:
             sbrs.progress = 99;
             sbrs.readyState = 3; // 譜面の解析が完了した時点で4(完了)とする
-            if (xhr.status === 200) {
+
+            try {
+
               // 読み込み成功
-              SBRS.parse(xhr.responseText, false);
-              if (callback && typeof callback.success === "function") {
-                callback.success();
+              if (xhr.status === 200) {
+
+                // 読み込んだ譜面を解析
+                SBRS.parse(xhr.responseText, false);
+                if (callback && typeof callback.success === "function") {
+                  callback.success();
+                }
+
+                // 読み込み失敗
+              } else {
+
+                throw new Error();
               }
-            } else {
-              // 読み込み失敗
-              console.error("譜面の読み込みに失敗しました");
+            } catch (e) {
+              console.error("譜面の読み込みに失敗しました(url:%s)", sbrScriptUrl);
               if (callback && typeof callback.error === "function") {
                 callback.error();
               }
