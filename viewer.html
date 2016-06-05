@@ -10,17 +10,66 @@
 </head>
 
 <body>
-  <div id="title">No Title ★-</div>
+  <div id="title">
+    <h1 class="value">No Title ★0</h1></div>
   <div id="info">
     <ul>
-      <li id="info-combo" class="type-both"><span class="value">-</span></li>
-      <li id="info-marker" class="type-both"><span class="value">-</span></li>
-      <li id="info-fevercombo" class="type-score"><span class="value">-</span></li>
-      <li id="info-fevergauge" class="type-score"><span class="value">-</span></li>
-      <li id="info-bossattack" class="type-boss"><span class="value">-</span></li>
-      <li id="info-playercombo" class="type-boss"><span class="value">-</span></li>
-      <li id="info-bosscombo" class="type-boss"><span class="value">-</span></li>
-      <li id="info-time" class="type-both"><span class="value">-</span></li>
+      <li id="info-combo" class="type-both">
+        <div class="value">480</div>
+        <div class="key">COMBO</div>
+        <div class="description">
+          この譜面のMAX COMBOの最大値、 いわゆるコンボ数の理論値です。
+        </div>
+      </li>
+      <li id="info-marker" class="type-both">
+        <div class="value">-</div>
+        <div class="key">MARKER</div>
+        <div class="description">
+          この譜面のマーカーの数です。 ロングマーカーはマーカー1つとしてカウントしています。
+        </div>
+      </li>
+      <li id="info-fevercombo" class="type-score">
+        <div class="value">-</div>
+        <div class="key">FEVER-COMBO</div>
+        <div class="description">
+          常に最適なタイミングでマーカーをタップした場合に、 フィーバー中に増加するコンボ数の目安です。
+        </div>
+      </li>
+      <li id="info-fevergauge" class="type-score">
+        <div class="value">-</div>
+        <div class="key">FEVER-GAUGE</div>
+        <div class="description">
+          フィーバーゲージの長さです。 PEFECT～MISSの判定により、それぞれ4,2,1,-1と増加し、 この値を超えるとフィーバーになります。
+        </div>
+      </li>
+      <li id="info-bossattack" class="type-boss">
+        <div class="value">-</div>
+        <div class="key">BOSS-ATTACK</div>
+        <div class="description">
+          ボスの暴走回数です。
+        </div>
+      </li>
+      <li id="info-playercombo" class="type-boss">
+        <div class="value">-</div>
+        <div class="key">PLAYER-COMBO</div>
+        <div class="description">
+          ボスが暴走していない時のコンボ数の目安です。
+        </div>
+      </li>
+      <li id="info-bosscombo" class="type-boss">
+        <div class="value">-</div>
+        <div class="key">BOSS-COMBO</div>
+        <div class="description">
+          ボスが暴走している時のコンボ数の目安です。
+        </div>
+      </li>
+      <li id="info-time" class="type-both">
+        <div class="value">-</div>
+        <div class="key">TIME</div>
+        <div class="description">
+          演奏時間の目安です。
+        </div>
+      </li>
     </ul>
   </div>
   <div id="view"></div>
