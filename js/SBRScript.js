@@ -192,7 +192,7 @@ var SBRS = (function() {
         } else {
 
           // 1～nレーンのループ
-          for (var lane = 1; lane <= sbrs.laneCount; lane++) {
+          for (var lane = 1; lane <= laneCount; lane++) {
             var type = parseInt(line.charAt(lane - 1));
             if (type !== 0) {
               var markerObj = new Marker();

@@ -23,7 +23,7 @@ var SBRSViewer = (function() {
     viewer.option.beatHeight = 20;
     viewer.option.laneWidth = 20;
     viewer.option.colBeat = 24;
-    viewer.option.markerScale = 1.0;
+    viewer.option.markerSize = 20;
   }
 
   window.addEventListener("DOMContentLoaded", function() {
@@ -47,7 +47,6 @@ var SBRSViewer = (function() {
             document.getElementById("view").innerHTML = "譜面の描画に失敗しました";
             console.error(e);
           }
-
         },
 
         // 読み込み失敗
@@ -153,9 +152,11 @@ var SBRSViewer = (function() {
     var measureIndex, measureIndexLength;
     var measureBeat, measureS, measureB;
     var colDrawBeat;
+    var laneCount;
     var i, iLen;
 
     viewElement = document.getElementById("view");
+    laneCount = sbrs.laneCount;
 
     // viewを初期化
     viewElement.innerHTML = "";
@@ -175,8 +176,11 @@ var SBRSViewer = (function() {
       colTr.appendChild(colTd);
 
       // 小節データ格納用テーブル作成
+      // テーブルのサイズは 各レーンの幅 * レーン数 + ヘッダの幅 + ボーダー
       measureTable = document.createElement("table");
       colTd.appendChild(measureTable);
+      measureTable.className = "col";
+      measureTable.style.width = (viewer.option.laneWidth * laneCount + 20 + 3 + (laneCount - 1)) + "px";
       
       // 1列の描画済み拍数を初期化
       colDrawBeat = 0;
@@ -198,10 +202,12 @@ var SBRSViewer = (function() {
         // 小節のヘッダ作成
         measureTh = document.createElement("th");
         measureTr.appendChild(measureTh);
+        measureTh.innerHTML = (measureIndex + 1);
 
         // 小節のデータ作成
         measureTd = document.createElement("td");
         measureTr.appendChild(measureTd);
+        measureTd.style.height = (measureBeat * viewer.option.beatHeight - 1) + "px";
         
         measureIndex++;
         
