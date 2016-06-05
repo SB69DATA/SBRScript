@@ -209,6 +209,9 @@ var SBRSViewer = (function() {
         measureTr.appendChild(measureTd);
         measureTd.style.height = (measureBeat * viewer.option.beatHeight - 1) + "px";
         
+        // 拍子線、小節線の描画
+        measureTd.appendChild(drawLine(measureS, measureB, laneCount));
+        
         measureIndex++;
         
       } while((colDrawBeat += measureBeat) < viewer.option.colBeat);
@@ -222,6 +225,44 @@ var SBRSViewer = (function() {
     updateInfo();
 
     return viewer;
+    
+    /* function drawLine
+     * 拍子線、レーンの区切り線を含むdiv要素を返します
+     * 引数1 : 拍子の分子
+     * 引数2 : 拍子の分母
+     * 引数3 : 拍数
+     * 引数4 : レーン数
+     * 戻り値 : 拍子線、レーンの区切り線を含むdiv要素
+     */
+    function drawLine(measureS, measureB, laneCount) {
+      
+      var div;
+      var divTmp;
+      var beatHeight;
+      var i, iLen;
+      
+      div = document.createElement("div");
+      div.className = "background";
+      beatHeight = viewer.option.beatHeight * measureS / measureB;
+      
+      // レーンの線
+      for(i=1, iLen = laneCount; i<iLen; i++) {
+        divTmp = document.createElement("div");
+        divTmp.className = "lane-line";
+        divTmp.style.left = (viewer.option.laneWidth * i) + "px";
+        div.appendChild(divTmp);
+      }
+      
+      // 拍子の線
+      for(i=1, iLen = measureS; i<iLen; i++) {
+        divTmp = document.createElement("div");
+        divTmp.className = "beat-line";
+        divTmp.style.bottom = (beatHeight * i - 1) + "px";
+        div.appendChild(divTmp);
+      }
+      
+      return div;
+    }
   };
 
   /* function updateInfo
