@@ -6,8 +6,8 @@
 
 body {
   font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
-  min-width : 100%;
-  display : inline-block;
+  min-width: 100%;
+  display: inline-block;
 }
 
 ul {
@@ -84,7 +84,7 @@ ul {
 /* view */
 
 #view {
-  margin : 10px 5px;
+  margin: 10px 5px;
 }
 
 #view > table {
@@ -92,7 +92,7 @@ ul {
 }
 
 #view > table > tr > td {
-  vertical-align : bottom;
+  vertical-align: bottom;
 }
 
 #view table.col {
@@ -107,32 +107,56 @@ ul {
   border: solid #000;
   border-width: 0 1px 1px 0;
   font-size: 8px;
-  position : relative;
+  position: relative;
 }
 
 #view table.col tr td {
   border: solid #000;
   border-width: 0 1px 1px 0;
-  position : relative;
+  position: relative;
 }
 
-#view table.col tr td .background {
-  width : 100%;
-  height : 100%;
+#view table.col tr td .line-aria {
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
+#view table.col tr td .marker-aria {
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
+#view table.col tr td .normal-marker {
+  background: #fff;
+  position: absolute;
+  border: 1px solid #666;
+}
+
+#view table.col tr td .long-marker {
+  background: #ff9;
+  position: absolute;
+  border: 1px solid #666;
+}
+
+#view table.col tr td .long-line {
+  background: #f00;
+  position: absolute;
 }
 
 #view table.col tr td .lane-line {
-  width : 1px;
-  height : 100%;
-  background : #f00;
-  position : absolute;
+  width: 1px;
+  height: 100%;
+  background: #f00;
+  position: absolute;
 }
 
 #view table.col tr td .beat-line {
-  width : 100%;
-  height : 1px;
-  background : #00f;
-  position : absolute;
+  width: 100%;
+  height: 1px;
+  background: #00f;
+  position: absolute;
 }
 
 

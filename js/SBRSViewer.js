@@ -21,9 +21,9 @@ var SBRSViewer = (function() {
     viewer.info.time = "-";
     viewer.option = {};
     viewer.option.beatHeight = 20;
-    viewer.option.laneWidth = 20;
-    viewer.option.colBeat = 24;
-    viewer.option.markerSize = 20;
+    viewer.option.laneWidth = 23;
+    viewer.option.colBeat = 32;
+    viewer.option.markerSize = 13;
   }
 
   window.addEventListener("DOMContentLoaded", function() {
@@ -151,6 +151,7 @@ var SBRSViewer = (function() {
     var measureTable, measureTr, measureTh, measureTd;
     var measureIndex, measureIndexLength;
     var measureBeat, measureS, measureB;
+    var markerIndex;
     var colDrawBeat;
     var laneCount;
     var i, iLen;
@@ -168,6 +169,9 @@ var SBRSViewer = (function() {
     colTr = document.createElement("tr");
     colTable.appendChild(colTr);
 
+    // 描画済みマーカーのindexを初期化
+    markerIndex = 0;
+
     // 全小節の描画が終わるまでループ
     for (measureIndex = 0, measureIndexLength = sbrs.measureCount; measureIndex < measureIndexLength;) {
 
@@ -181,14 +185,15 @@ var SBRSViewer = (function() {
       colTd.appendChild(measureTable);
       measureTable.className = "col";
       measureTable.style.width = (viewer.option.laneWidth * laneCount + 20 + 3 + (laneCount - 1)) + "px";
-      
+
       // 1列の描画済み拍数を初期化
       colDrawBeat = 0;
 
+      // 1列に1小節は必ず表示する
       do {
 
         // 全小節の描画が終わった後は、最終小節の拍子で空の小節データを作成
-        if(measureIndex < measureIndexLength) {
+        if (measureIndex < measureIndexLength) {
           // 拍子の分子と分母、拍数を取得
           measureS = sbrs.measure[measureIndex].valueS;
           measureB = sbrs.measure[measureIndex].valueB;
@@ -208,14 +213,19 @@ var SBRSViewer = (function() {
         measureTd = document.createElement("td");
         measureTr.appendChild(measureTd);
         measureTd.style.height = (measureBeat * viewer.option.beatHeight - 1) + "px";
-        
+
         // 拍子線、小節線の描画
-        measureTd.appendChild(drawLine(measureS, measureB, laneCount));
-        
+        drawLine(measureTd, measureS, measureB, laneCount, (measureBeat * viewer.option.beatHeight - 1));
+
+        // 前の小節から続くロングマーカーの描画
+
+        // マーカーの描画
+        markerIndex = drawMarker(measureTd, markerIndex, measureIndex + 1, (measureBeat * viewer.option.beatHeight - 1));
+
         measureIndex++;
-        
-      } while((colDrawBeat += measureBeat) < viewer.option.colBeat);
-      
+
+      } while ((colDrawBeat += measureBeat) < viewer.option.colBeat);
+
     }
 
     // viewに反映
@@ -225,43 +235,96 @@ var SBRSViewer = (function() {
     updateInfo();
 
     return viewer;
-    
-    /* function drawLine
-     * 拍子線、レーンの区切り線を含むdiv要素を返します
-     * 引数1 : 拍子の分子
-     * 引数2 : 拍子の分母
-     * 引数3 : 拍数
-     * 引数4 : レーン数
-     * 戻り値 : 拍子線、レーンの区切り線を含むdiv要素
+
+    /* function drawMarker
+     * マーカーを含むdiv要素を小節データに追加します
+     * 引数1 : 小節データ要素
+     * 引数2 : 描画済みマーカーのindex
+     * 引数3 : 現在の小節
+     * 引数4 : 描画エリアの高さ
+     * 戻り値 : なし
      */
-    function drawLine(measureS, measureB, laneCount) {
-      
+    function drawMarker(measureTd, markerIndex, measure, divHeight) {
+
+      var len;
+      var marker;
+      var markerDiv;
+
+      var div;
+      div = document.createElement("div");
+      div.className = "marker-aria";
+      div.style.height = divHeight + "px";
+
+      for (len = sbrs.marker.length; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
+        marker = sbrs.marker[markerIndex];
+
+        markerDiv = document.createElement("div");
+        markerDiv.style.height = (viewer.option.markerSize - 2) + "px";
+        markerDiv.style.width = (viewer.option.markerSize - 2) + "px";
+        markerDiv.style.borderRadius = (viewer.option.markerSize / 2) + "px";
+        markerDiv.style.left = ((marker.lane - 1) * (viewer.option.laneWidth + 1) + ((viewer.option.laneWidth - viewer.option.markerSize) / 2)) + "px";
+        markerDiv.style.bottom = (marker.point * viewer.option.beatHeight - (viewer.option.markerSize - 1) / 2 - 1) + "px";
+
+        switch (marker.type) {
+          case 1:
+            // 通常マーカー
+            markerDiv.className = "normal-marker";
+            break;
+          case 2:
+            // ロング開始
+            markerDiv.className = "long-marker";
+            break;
+          case 3:
+            // ロング終了
+            markerDiv.className = "long-marker";
+            break;
+        }
+
+        div.appendChild(markerDiv);
+      }
+      measureTd.appendChild(div);
+
+      return markerIndex;
+    }
+
+    /* function drawLine
+     * 拍子線、レーンの区切り線を含むdiv要素を小節データに追加します
+     * 引数1 : 小節データ要素
+     * 引数2 : 拍子の分子
+     * 引数3 : 拍子の分母
+     * 引数4 : レーン数
+     * 引数5 : 描画エリアの高さ
+     * 戻り値 : なし
+     */
+    function drawLine(measureTd, measureS, measureB, laneCount, divHeight) {
+
       var div;
       var divTmp;
       var beatHeight;
       var i, iLen;
-      
+
       div = document.createElement("div");
-      div.className = "background";
+      div.className = "line-aria";
+      div.style.height = divHeight + "px";
       beatHeight = viewer.option.beatHeight * measureS / measureB;
-      
+
       // レーンの線
-      for(i=1, iLen = laneCount; i<iLen; i++) {
+      for (i = 1, iLen = laneCount; i < iLen; i++) {
         divTmp = document.createElement("div");
         divTmp.className = "lane-line";
-        divTmp.style.left = (viewer.option.laneWidth * i) + "px";
+        divTmp.style.left = ((viewer.option.laneWidth + 1) * i + -1) + "px";
         div.appendChild(divTmp);
       }
-      
+
       // 拍子の線
-      for(i=1, iLen = measureS; i<iLen; i++) {
+      for (i = 1, iLen = measureS; i < iLen; i++) {
         divTmp = document.createElement("div");
         divTmp.className = "beat-line";
         divTmp.style.bottom = (beatHeight * i - 1) + "px";
         div.appendChild(divTmp);
       }
-      
-      return div;
+
+      measureTd.appendChild(div);
     }
   };
 
