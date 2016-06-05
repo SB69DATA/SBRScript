@@ -1,4 +1,5 @@
 /*
+ * 履歴
  * 2016/04/01 ver 1.00 新規作成
  */
 var SBRS = (function() {
@@ -19,6 +20,7 @@ var SBRS = (function() {
     sbrs.bpm = []; // BPMの情報(Bpmオブジェクト)を配列で格納
     sbrs.marker = []; // マーカーの情報(Markerオブジェクト)を配列で格納
     sbrs.measure = []; // 小節の情報(Measureオブジェクト)を配列で格納
+    sbrs.bpmCount = 0; // BPMオブジェクト数
     sbrs.measureCount = 0; // 小節オブジェクト数
     sbrs.markerCount = 0; // マーカーオブジェクト数(ロングマーカーのホールド除く)
     sbrs.comboCount = 0; // コンボ数の理論値
@@ -232,6 +234,11 @@ var SBRS = (function() {
 
     // コンボ数の理論値
     sbrs.comboCount = getComboCount();
+    
+    // オブジェクト数
+    sbrs.bpmCount = sbrs.bpm.length;
+    sbrs.measureCount = sbrs.measure.length;
+    sbrs.markerCount = sbrs.marker.length;
 
     // 読み込み完了
     sbrs.readyState = 4;
