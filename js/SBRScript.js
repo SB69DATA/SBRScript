@@ -234,7 +234,7 @@ var SBRS = (function() {
 
     // コンボ数の理論値
     sbrs.comboCount = getComboCount();
-    
+
     // オブジェクト数
     sbrs.bpmCount = sbrs.bpm.length;
     sbrs.measureCount = sbrs.measure.length;
@@ -280,7 +280,7 @@ var SBRS = (function() {
           callback.error();
         }
       }
-      
+
       // 非同期読み込み
     } else {
 
@@ -406,6 +406,11 @@ var SBRS = (function() {
               iLen++;
             }
             line = line.substr(0, laneCount);
+          }
+
+          // laneCount未満の記述を保管
+          if (line.length < laneCount) {
+            line = (line + blankLane).substring(0, laneCount);
           }
 
           if (line.charAt(0) !== ",") {
