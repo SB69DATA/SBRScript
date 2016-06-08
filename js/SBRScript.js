@@ -101,15 +101,18 @@ var SBRS = (function() {
     var bpm = 120.0;
     var scroll = 1.0;
     var laneCount = sbrs.laneCount;
+    var lastLaneType = [];
+    var i, iLen;
+    var loop;
 
     // 上から下までのループ
-    for (var i = 0, measure = 1, len = sbrScriptArray.length; i < len; i++, measure++) {
+    for (i = 0, measure = 1, iLen = sbrScriptArray.length; i < iLen; i++, measure++) {
 
       // 小節の行数取得
       var measureLineCount = getMeasureLineCount(sbrScriptArray, i);
 
       // 1小節のループ
-      for (var measureLineIndex = 0; i < len && sbrScriptArray[i].charAt(0) !== ","; i++) {
+      for (var measureLineIndex = 0; i < iLen && sbrScriptArray[i].charAt(0) !== ","; i++) {
 
         var line = sbrScriptArray[i];
         var point = measureLineIndex / measureLineCount * measureS;
@@ -194,17 +197,35 @@ var SBRS = (function() {
           // 1～nレーンのループ
           for (var lane = 1; lane <= laneCount; lane++) {
             var type = parseInt(line.charAt(lane - 1));
+            var typeTmp = type;
             if (type !== 0) {
-              var markerObj = new Marker();
-              markerObj.measure = measure;
-              markerObj.point = point;
-              markerObj.time = time;
-              markerObj.type = type;
-              markerObj.lane = lane;
-              markerObj.bpm = bpm;
-              markerObj.scroll = scroll;
-              markerObj.pair = -1;
-              sbrs.marker.push(markerObj);
+
+              for(loop = 0; loop<2; loop++) {
+
+                if(loop === 0) {
+                  // ロングマーカーの終端が見つからなかった場合は、ロングマーカーの終端を追加する
+                  if(lastLaneType[lane-1] === 2 && type !== 3) {
+                    type = 3;
+                  } else {
+                    continue;
+                  }
+                }
+
+                var markerObj = new Marker();
+                markerObj.measure = measure;
+                markerObj.point = point;
+                markerObj.time = time;
+                markerObj.type = type;
+                markerObj.lane = lane;
+                markerObj.bpm = bpm;
+                markerObj.scroll = scroll;
+                markerObj.pair = -1;
+                sbrs.marker.push(markerObj);
+
+                type = typeTmp;
+
+              lastLaneType[lane-1] = type;
+              }
             }
           }
           time += 240000.0 / bpm * (measureS / measureB) / measureLineCount;
@@ -508,8 +529,10 @@ var SBRS = (function() {
     var endIndex = -1;
     for (var i = index + 1, len = sbrs.marker.length; i < len; i++) {
       var marker = sbrs.marker[i];
-      if (marker.type === 3 && marker.lane === lane) {
-        endIndex = i;
+      if(marker.lane === lane) {
+        if (marker.type === 3) {
+          endIndex = i;
+        }
         break;
       }
     }
