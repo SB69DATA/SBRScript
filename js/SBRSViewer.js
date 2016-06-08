@@ -21,7 +21,7 @@ var SBRSViewer = (function() {
     viewer.info.time = "-";
     viewer.option = {};
     viewer.option.beatHeight = 20;
-    viewer.option.laneWidth = 23;
+    viewer.option.laneWidth = 13;
     viewer.option.colBeat = 32;
     viewer.option.markerSize = 13;
   }
@@ -145,15 +145,18 @@ var SBRSViewer = (function() {
 
     // デバッグ用
     console.log(sbrs);
+    var drawStart = performance.now();
 
     var viewElement;
     var colTable, colTr, colTd;
     var measureTable, measureTr, measureTh, measureTd;
     var measureIndex, measureIndexLength;
-    var measureBeat, measureS, measureB;
+    var measureBeat, measureS, measureB, measureHeight;
+    var markerAriaDiv, lineAriaDiv;
     var markerIndex;
     var colDrawBeat;
     var laneCount;
+    var longMakrerInfo = [];
     var i, iLen;
 
     viewElement = document.getElementById("view");
@@ -210,17 +213,33 @@ var SBRSViewer = (function() {
         measureTh.innerHTML = (measureIndex + 1);
 
         // 小節のデータ作成
+        measureHeight = measureBeat * viewer.option.beatHeight - 1;
         measureTd = document.createElement("td");
         measureTr.appendChild(measureTd);
-        measureTd.style.height = (measureBeat * viewer.option.beatHeight - 1) + "px";
+        measureTd.style.height = measureHeight + "px";
 
-        // 拍子線、小節線の描画
-        drawLine(measureTd, measureS, measureB, laneCount, (measureBeat * viewer.option.beatHeight - 1));
+        // レーンの区切り線、拍子線の描画エリア作成
+        lineAriaDiv = document.createElement("div");
+        lineAriaDiv.className = "line-aria";
+        lineAriaDiv.style.height = measureHeight + "px";
+        measureTd.appendChild(lineAriaDiv);
+
+        // マーカーの描画エリア作成
+        markerAriaDiv = document.createElement("div");
+        markerAriaDiv.className = "marker-aria";
+        markerAriaDiv.style.height = measureHeight + "px";
+        measureTd.appendChild(markerAriaDiv);
+
+        // レーンの区切り線、拍子線の描画
+        drawLine(lineAriaDiv, measureS, measureB, laneCount);
+
+        // ロングマーカーの中間線を描画
+        drawLongLine(markerAriaDiv, measureIndex + 1, measureHeight, longMakrerInfo);
 
         // 前の小節から続くロングマーカーの描画
 
         // マーカーの描画
-        markerIndex = drawMarker(measureTd, markerIndex, measureIndex + 1, (measureBeat * viewer.option.beatHeight - 1));
+        markerIndex = drawMarker(markerAriaDiv, markerIndex, measureIndex + 1, measureHeight, longMakrerInfo);
 
         measureIndex++;
 
@@ -234,28 +253,27 @@ var SBRSViewer = (function() {
     // 情報エリアを更新
     updateInfo();
 
+    // デバッグ用
+    console.log(performance.now() - drawStart);
+
     return viewer;
 
     /* function drawMarker
-     * マーカーを含むdiv要素を小節データに追加します
-     * 引数1 : 小節データ要素
+     * マーカーエリアのdiv要素にマーカーを追加します
+     * 引数1 : マーカーdiv要素
      * 引数2 : 描画済みマーカーのindex
      * 引数3 : 現在の小節
      * 引数4 : 描画エリアの高さ
-     * 戻り値 : なし
+     * 引数5 : ロングマーカーの描画情報
+     * 戻り値 : 次に処理するマーカーのインデックス
      */
-    function drawMarker(measureTd, markerIndex, measure, divHeight) {
+    function drawMarker(markerAriaDiv, markerIndex, measure, measureHeight, longMakrerInfo) {
 
       var len;
       var marker;
       var markerDiv;
 
-      var div;
-      div = document.createElement("div");
-      div.className = "marker-aria";
-      div.style.height = divHeight + "px";
-
-      for (len = sbrs.marker.length; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
+      for (len = sbrs.markerCount; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
         marker = sbrs.marker[markerIndex];
 
         markerDiv = document.createElement("div");
@@ -264,27 +282,100 @@ var SBRSViewer = (function() {
         markerDiv.style.borderRadius = (viewer.option.markerSize / 2) + "px";
         markerDiv.style.left = ((marker.lane - 1) * (viewer.option.laneWidth + 1) + ((viewer.option.laneWidth - viewer.option.markerSize) / 2)) + "px";
         markerDiv.style.bottom = (marker.point * viewer.option.beatHeight - (viewer.option.markerSize - 1) / 2 - 1) + "px";
+        markerDiv.style.lineHeight = (viewer.option.markerSize - 2) + "px";
 
         switch (marker.type) {
           case 1:
             // 通常マーカー
             markerDiv.className = "normal-marker";
+            markerDiv.style.zIndex = 200 + len - markerIndex;
             break;
           case 2:
             // ロング開始
             markerDiv.className = "long-marker";
+            markerDiv.style.zIndex = 300 + len - markerIndex;
+            markerDiv.innerHTML = 2 + marker.long.length;
+            longMakrerInfo[marker.lane - 1] = {
+              start: {
+                measure: marker.measure,
+                point: marker.point
+              },
+              end: {
+                measure: sbrs.marker[marker.pair].measure,
+                point: sbrs.marker[marker.pair].point
+              },
+              style: {
+                width: markerDiv.style.width,
+                left: markerDiv.style.left
+              }
+            };
+
+            // ロングマーカーの中間線を描画
+            drawLongLine(markerAriaDiv, measure, measureHeight, longMakrerInfo);
             break;
           case 3:
             // ロング終了
             markerDiv.className = "long-marker";
+            markerDiv.style.zIndex = 100 + len - markerIndex;
             break;
+          default:
         }
 
-        div.appendChild(markerDiv);
+        markerAriaDiv.appendChild(markerDiv);
       }
-      measureTd.appendChild(div);
 
       return markerIndex;
+    }
+
+    /* function drawLongLine
+     * マーカーエリアのdiv要素にロングマーカーの中間線を追加します
+     * 引数1 : 小節データ要素
+     * 引数2 : 現在の小節
+     * 引数3 : 描画エリアの高さ
+     * 引数4 : ロングマーカーの描画情報
+     * 戻り値 : なし
+     */
+    function drawLongLine(markerAriaDiv, measure, measureHeight, longMarkerInfo) {
+
+      var laneCount = sbrs.laneCount;
+      var fromY, toY;
+      var markerDiv;
+      var i, iLen;
+
+      for (i = 0, iLen = laneCount; i < iLen; i++) {
+
+        if (longMarkerInfo[i] && measure === longMarkerInfo[i].start.measure) {
+
+          if (measure === 85) {
+            var j = 0;
+          }
+
+          fromY = longMarkerInfo[i].start.point * viewer.option.beatHeight;
+          if (measure < longMarkerInfo[i].end.measure) {
+            toY = measureHeight;
+          } else {
+            toY = longMarkerInfo[i].end.point * viewer.option.beatHeight;
+          }
+
+          markerDiv = document.createElement("div");
+          markerDiv.className = "long-line";
+          markerDiv.style.height = Math.ceil(toY - fromY + 1) + "px";
+          markerDiv.style.width = longMarkerInfo[i].style.width;
+          markerDiv.style.left = longMarkerInfo[i].style.left;
+          markerDiv.style.bottom = Math.floor(fromY - 1) + "px";
+
+          markerAriaDiv.appendChild(markerDiv);
+
+          if (measure === longMarkerInfo[i].end.measure + 1 && longMarkerInfo[i].end.point === 0) {
+            longMarkerInfo[i] = null;
+          } else if (measure < longMarkerInfo[i].end.measure) {
+            longMarkerInfo[i].start.measure = measure + 1;
+            longMarkerInfo[i].start.point = 0;
+          } else {
+            longMarkerInfo[i] = null;
+          }
+        }
+      }
     }
 
     /* function drawLine
@@ -296,16 +387,12 @@ var SBRSViewer = (function() {
      * 引数5 : 描画エリアの高さ
      * 戻り値 : なし
      */
-    function drawLine(measureTd, measureS, measureB, laneCount, divHeight) {
+    function drawLine(lineAriaDiv, measureS, measureB, laneCount, divHeight) {
 
-      var div;
       var divTmp;
       var beatHeight;
       var i, iLen;
 
-      div = document.createElement("div");
-      div.className = "line-aria";
-      div.style.height = divHeight + "px";
       beatHeight = viewer.option.beatHeight * measureS / measureB;
 
       // レーンの線
@@ -313,7 +400,7 @@ var SBRSViewer = (function() {
         divTmp = document.createElement("div");
         divTmp.className = "lane-line";
         divTmp.style.left = ((viewer.option.laneWidth + 1) * i + -1) + "px";
-        div.appendChild(divTmp);
+        lineAriaDiv.appendChild(divTmp);
       }
 
       // 拍子の線
@@ -321,10 +408,8 @@ var SBRSViewer = (function() {
         divTmp = document.createElement("div");
         divTmp.className = "beat-line";
         divTmp.style.bottom = (beatHeight * i - 1) + "px";
-        div.appendChild(divTmp);
+        lineAriaDiv.appendChild(divTmp);
       }
-
-      measureTd.appendChild(div);
     }
   };
 
