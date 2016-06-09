@@ -234,7 +234,7 @@ var SBRSViewer = (function() {
         drawLine(lineAriaDiv, measureS, measureB, laneCount);
 
         // ロングマーカーの中間線を描画
-        drawLongLine(markerAriaDiv, measureIndex + 1, measureHeight, longMakrerInfo);
+        drawLongLine(markerAriaDiv, measureIndex + 1, measureHeight, longMakrerInfo, colDrawBeat);
 
         // 前の小節から続くロングマーカーの描画
 
@@ -333,9 +333,10 @@ var SBRSViewer = (function() {
      * 引数2 : 現在の小節
      * 引数3 : 描画エリアの高さ
      * 引数4 : ロングマーカーの描画情報
+     * 引数5 : 1列の描画済み拍数
      * 戻り値 : なし
      */
-    function drawLongLine(markerAriaDiv, measure, measureHeight, longMarkerInfo) {
+    function drawLongLine(markerAriaDiv, measure, measureHeight, longMarkerInfo, colDrawBeat) {
 
       var laneCount = sbrs.laneCount;
       var fromY, toY;
@@ -362,7 +363,13 @@ var SBRSViewer = (function() {
           markerDiv.style.height = Math.ceil(toY - fromY + 1) + "px";
           markerDiv.style.width = longMarkerInfo[i].style.width;
           markerDiv.style.left = longMarkerInfo[i].style.left;
-          markerDiv.style.bottom = Math.floor(fromY - 1) + "px";
+
+          if(colDrawBeat === 0) {
+            // 列の1小節目はbottomの位置を1px高めに
+            markerDiv.style.bottom = Math.floor(fromY - 0) + "px";
+          } else {
+            markerDiv.style.bottom = Math.floor(fromY - 1) + "px";
+          }
 
           markerAriaDiv.appendChild(markerDiv);
 
