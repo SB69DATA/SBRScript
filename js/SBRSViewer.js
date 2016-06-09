@@ -9,6 +9,7 @@ var SBRSViewer = (function() {
   function initViewer(sbrs) {
     viewer = {};
     viewer.sbrs = sbrs;
+    viewer.title = "No Title ★0";
     viewer.info = {};
     viewer.info.bpm = "-";
     viewer.info.combo = "-";
@@ -250,6 +251,9 @@ var SBRSViewer = (function() {
     // viewに反映
     viewElement.appendChild(colTable);
 
+    // 情報エリアに必要な情報をsbrsから取得、設定
+    setIntoFromSbrs();
+
     // 情報エリアを更新
     updateInfo();
 
@@ -434,6 +438,33 @@ var SBRSViewer = (function() {
         lineAriaDiv.appendChild(divTmp);
       }
     }
+
+    /* function setInfoFromSbrs
+     * 情報エリアに必要な情報をsbrsから取得、設定します
+     * 引数1 : sbrsオブジェクト
+     * 戻り値 : なし
+     */
+    function setIntoFromSbrs() {
+
+      // タイトル設定
+      viewer.title = sbrs.title + " ★" + sbrs.level;
+
+      // BPM設定
+      if(sbrs.bpmCount === 1) {
+        viewer.info.bpm = sbrs.maxBpm;
+      } else {
+        viewer.info.bpm = sbrs.minBpm + " ～ " + sbrs.maxBpm;
+      }
+      
+      // コンボ数設定
+      viewer.info.combo = sbrs.comboCount;
+      
+      // マーカー数設定
+      viewer.info.marker = sbrs.markerCount;
+      
+      // 演奏時間設定
+      viewer.info.time = Math.round(sbrs.endTime / 1000);
+    }
   };
 
   /* function updateInfo
@@ -442,6 +473,8 @@ var SBRSViewer = (function() {
    */
   function updateInfo() {
 
+    document.title = viewer.title + " | Sb69 Score Viewer";
+    document.querySelector("#title .value").innerHTML = viewer.title;
     document.querySelector("#info-bpm .value").innerHTML = viewer.info.bpm;
     document.querySelector("#info-combo .value").innerHTML = viewer.info.combo;
     document.querySelector("#info-marker .value").innerHTML = viewer.info.marker;
