@@ -23,6 +23,8 @@ var SBRS = (function() {
     sbrs.bpmCount = 0; // BPMオブジェクト数
     sbrs.measureCount = 0; // 小節オブジェクト数
     sbrs.markerCount = 0; // マーカーオブジェクト数(ロングマーカーのホールド除く)
+    sbrs.maxBpm = 0;  // BPMの最大値
+    sbrs.minBpm = 0; // BPMの最小値
     sbrs.comboCount = 0; // コンボ数の理論値
     sbrs.judgeRange = 1.0; // 判定の範囲
     sbrs.feverGaugeLength = 0; // フィーバーゲージの長さ
@@ -102,6 +104,7 @@ var SBRS = (function() {
     var scroll = 1.0;
     var laneCount = sbrs.laneCount;
     var lastLaneType = [];
+    var bpmValueArray = [];
     var i, iLen;
     var loop;
 
@@ -165,6 +168,7 @@ var SBRS = (function() {
             bpmObj.point = point;
             bpmObj.time = time;
             sbrs.bpm.push(bpmObj);
+            bpmValueArray.push(bpmObj.value);
 
             // 現在のBPM設定
             bpm = bpmObj.value;
@@ -260,6 +264,10 @@ var SBRS = (function() {
     sbrs.bpmCount = sbrs.bpm.length;
     sbrs.measureCount = sbrs.measure.length;
     sbrs.markerCount = sbrs.marker.length;
+
+    // BPMの最大、最小値取得
+    sbrs.maxBpm = Math.max.apply(null, bpmValueArray);
+    sbrs.minBpm = Math.min.apply(null, bpmValueArray);
 
     // 読み込み完了
     sbrs.readyState = 4;
