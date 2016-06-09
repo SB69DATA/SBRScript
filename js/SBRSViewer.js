@@ -272,56 +272,64 @@ var SBRSViewer = (function() {
       var len;
       var marker;
       var markerDiv;
+      var measureObj;
+      var measureB;
 
-      for (len = sbrs.markerCount; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
-        marker = sbrs.marker[markerIndex];
+      if(measure < sbrs.measureCount) {
+        
+        measureObj = sbrs.measure[measure-1];
+        measureB = measureObj.valueB;
 
-        markerDiv = document.createElement("div");
-        markerDiv.style.height = (viewer.option.markerSize - 2) + "px";
-        markerDiv.style.width = (viewer.option.markerSize - 2) + "px";
-        markerDiv.style.borderRadius = (viewer.option.markerSize / 2) + "px";
-        markerDiv.style.left = ((marker.lane - 1) * (viewer.option.laneWidth + 1) + ((viewer.option.laneWidth - viewer.option.markerSize) / 2)) + "px";
-        markerDiv.style.bottom = (marker.point * viewer.option.beatHeight - (viewer.option.markerSize - 1) / 2 - 1) + "px";
-        markerDiv.style.lineHeight = (viewer.option.markerSize - 2) + "px";
+        for (len = sbrs.markerCount; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
+          marker = sbrs.marker[markerIndex];
 
-        switch (marker.type) {
-          case 1:
-            // 通常マーカー
-            markerDiv.className = "normal-marker";
-            markerDiv.style.zIndex = 200 + len - markerIndex;
-            break;
-          case 2:
-            // ロング開始
-            markerDiv.className = "long-marker";
-            markerDiv.style.zIndex = 300 + len - markerIndex;
-            markerDiv.innerHTML = 2 + marker.long.length;
-            longMakrerInfo[marker.lane - 1] = {
-              start: {
-                measure: marker.measure,
-                point: marker.point
-              },
-              end: {
-                measure: sbrs.marker[marker.pair].measure,
-                point: sbrs.marker[marker.pair].point
-              },
-              style: {
-                width: markerDiv.style.width,
-                left: markerDiv.style.left
-              }
-            };
+          markerDiv = document.createElement("div");
+          markerDiv.style.height = (viewer.option.markerSize - 2) + "px";
+          markerDiv.style.width = (viewer.option.markerSize - 2) + "px";
+          markerDiv.style.borderRadius = (viewer.option.markerSize / 2) + "px";
+          markerDiv.style.left = ((marker.lane - 1) * (viewer.option.laneWidth + 1) + ((viewer.option.laneWidth - viewer.option.markerSize) / 2)) + "px";
+          markerDiv.style.bottom = (marker.point * viewer.option.beatHeight * 4 / measureB - (viewer.option.markerSize - 1) / 2 - 1) + "px";
+          markerDiv.style.lineHeight = (viewer.option.markerSize - 2) + "px";
 
-            // ロングマーカーの中間線を描画
-            drawLongLine(markerAriaDiv, measure, measureHeight, longMakrerInfo);
-            break;
-          case 3:
-            // ロング終了
-            markerDiv.className = "long-marker";
-            markerDiv.style.zIndex = 100 + len - markerIndex;
-            break;
-          default:
+          switch (marker.type) {
+            case 1:
+              // 通常マーカー
+              markerDiv.className = "normal-marker";
+              markerDiv.style.zIndex = 200 + len - markerIndex;
+              break;
+            case 2:
+              // ロング開始
+              markerDiv.className = "long-marker";
+              markerDiv.style.zIndex = 300 + len - markerIndex;
+              markerDiv.innerHTML = 2 + marker.long.length;
+              longMakrerInfo[marker.lane - 1] = {
+                start: {
+                  measure: marker.measure,
+                  point: marker.point
+                },
+                end: {
+                  measure: sbrs.marker[marker.pair].measure,
+                  point: sbrs.marker[marker.pair].point
+                },
+                style: {
+                  width: markerDiv.style.width,
+                  left: markerDiv.style.left
+                }
+              };
+
+              // ロングマーカーの中間線を描画
+              drawLongLine(markerAriaDiv, measure, measureHeight, longMakrerInfo);
+              break;
+            case 3:
+              // ロング終了
+              markerDiv.className = "long-marker";
+              markerDiv.style.zIndex = 100 + len - markerIndex;
+              break;
+            default:
+          }
+
+          markerAriaDiv.appendChild(markerDiv);
         }
-
-        markerAriaDiv.appendChild(markerDiv);
       }
 
       return markerIndex;
@@ -342,44 +350,52 @@ var SBRSViewer = (function() {
       var fromY, toY;
       var markerDiv;
       var i, iLen;
+      var measureObj;
+      var measureB;
 
-      for (i = 0, iLen = laneCount; i < iLen; i++) {
+      if(measure < sbrs.measureCount) {
+        
+        measureObj = sbrs.measure[measure-1];
+        measureB = measureObj.valueB;
 
-        if (longMarkerInfo[i] && measure === longMarkerInfo[i].start.measure) {
+        for (i = 0, iLen = laneCount; i < iLen; i++) {
 
-          if (measure === 85) {
-            var j = 0;
-          }
+          if (longMarkerInfo[i] && measure === longMarkerInfo[i].start.measure) {
 
-          fromY = longMarkerInfo[i].start.point * viewer.option.beatHeight;
-          if (measure < longMarkerInfo[i].end.measure) {
-            toY = measureHeight;
-          } else {
-            toY = longMarkerInfo[i].end.point * viewer.option.beatHeight;
-          }
+            if (measure === 85) {
+              var j = 0;
+            }
 
-          markerDiv = document.createElement("div");
-          markerDiv.className = "long-line";
-          markerDiv.style.height = Math.ceil(toY - fromY + 1) + "px";
-          markerDiv.style.width = longMarkerInfo[i].style.width;
-          markerDiv.style.left = longMarkerInfo[i].style.left;
+            fromY = longMarkerInfo[i].start.point * 4 / measureB * viewer.option.beatHeight;
+            if (measure < longMarkerInfo[i].end.measure) {
+              toY = measureHeight;
+            } else {
+              toY = longMarkerInfo[i].end.point * 4 / measureB * viewer.option.beatHeight;
+            }
 
-          if(colDrawBeat === 0) {
-            // 列の1小節目はbottomの位置を1px高めに
-            markerDiv.style.bottom = Math.floor(fromY - 0) + "px";
-          } else {
-            markerDiv.style.bottom = Math.floor(fromY - 1) + "px";
-          }
+            markerDiv = document.createElement("div");
+            markerDiv.className = "long-line";
+            markerDiv.style.height = Math.ceil(toY - fromY + 1) + "px";
+            markerDiv.style.width = longMarkerInfo[i].style.width;
+            markerDiv.style.left = longMarkerInfo[i].style.left;
 
-          markerAriaDiv.appendChild(markerDiv);
+            if(colDrawBeat === 0) {
+              // 列の1小節目はbottomの位置を1px高めに
+              markerDiv.style.bottom = Math.floor(fromY - 0) + "px";
+            } else {
+              markerDiv.style.bottom = Math.floor(fromY - 1) + "px";
+            }
 
-          if (measure === longMarkerInfo[i].end.measure + 1 && longMarkerInfo[i].end.point === 0) {
-            longMarkerInfo[i] = null;
-          } else if (measure < longMarkerInfo[i].end.measure) {
-            longMarkerInfo[i].start.measure = measure + 1;
-            longMarkerInfo[i].start.point = 0;
-          } else {
-            longMarkerInfo[i] = null;
+            markerAriaDiv.appendChild(markerDiv);
+
+            if (measure === longMarkerInfo[i].end.measure + 1 && longMarkerInfo[i].end.point === 0) {
+              longMarkerInfo[i] = null;
+            } else if (measure < longMarkerInfo[i].end.measure) {
+              longMarkerInfo[i].start.measure = measure + 1;
+              longMarkerInfo[i].start.point = 0;
+            } else {
+              longMarkerInfo[i] = null;
+            }
           }
         }
       }
@@ -400,7 +416,7 @@ var SBRSViewer = (function() {
       var beatHeight;
       var i, iLen;
 
-      beatHeight = viewer.option.beatHeight * measureS / measureB;
+      beatHeight = viewer.option.beatHeight * 4 / measureB;
 
       // レーンの線
       for (i = 1, iLen = laneCount; i < iLen; i++) {
