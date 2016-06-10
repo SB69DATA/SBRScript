@@ -23,7 +23,7 @@ var SBRS = (function() {
     sbrs.bpmCount = 0; // BPMオブジェクト数
     sbrs.measureCount = 0; // 小節オブジェクト数
     sbrs.markerCount = 0; // マーカーオブジェクト数(ロングマーカーのホールド除く)
-    sbrs.maxBpm = 0;  // BPMの最大値
+    sbrs.maxBpm = 0; // BPMの最大値
     sbrs.minBpm = 0; // BPMの最小値
     sbrs.comboCount = 0; // コンボ数の理論値
     sbrs.judgeRange = 1.0; // 判定の範囲
@@ -204,11 +204,11 @@ var SBRS = (function() {
             var typeTmp = type;
             if (type !== 0) {
 
-              for(loop = 0; loop<2; loop++) {
+              for (loop = 0; loop < 2; loop++) {
 
-                if(loop === 0) {
+                if (loop === 0) {
                   // ロングマーカーの終端が見つからなかった場合は、ロングマーカーの終端を追加する
-                  if(lastLaneType[lane-1] === 2 && type !== 3) {
+                  if (lastLaneType[lane - 1] === 2 && type !== 3) {
                     type = 3;
                   } else {
                     continue;
@@ -228,7 +228,7 @@ var SBRS = (function() {
 
                 type = typeTmp;
 
-              lastLaneType[lane-1] = type;
+                lastLaneType[lane - 1] = type;
               }
             }
           }
@@ -280,7 +280,7 @@ var SBRS = (function() {
    * 指定されたURLから譜面を読み込む
    * 引数1 : sbrスクリプトファイルのURL
    * 引数2 : 同期読み込みフラグ(true:非同期読み込み false:同期読み込み)
-   * 引数3 : 非同期読み込みが完了した時に呼び出すコールバック関数
+   * 引数3 : 読み込みが完了した時に呼び出すコールバック関数
    *        callback.success : 読み込み成功時に実行する関数
    *        callback.error   : 読み込み失敗時に実行する関数
    * 戻り値 : sbrスクリプトオブジェクト
@@ -512,7 +512,7 @@ var SBRS = (function() {
               var markerObj = new Marker();
               markerObj.measure = measure;
               markerObj.point = point;
-              markerObj.time = getTimeFromMeasurePoint(measure, point);
+              markerObj.time = SBRS.getTimeFromMeasurePoint(measure, point);
               markerObj.type = 4;
               markerObj.lane = lane;
               marker.long.push(markerObj);
@@ -537,7 +537,7 @@ var SBRS = (function() {
     var endIndex = -1;
     for (var i = index + 1, len = sbrs.marker.length; i < len; i++) {
       var marker = sbrs.marker[i];
-      if(marker.lane === lane) {
+      if (marker.lane === lane) {
         if (marker.type === 3) {
           endIndex = i;
         }
@@ -548,12 +548,12 @@ var SBRS = (function() {
   }
 
   /* function getTimeFromMeasurePoint
-   * 小節と拍を元に時間を取得します
+   * 小節と拍数を元に時間を取得します
    * 引数1 : 時間を確認したい小節
-   * 引数2 : 時間を確認したい拍
+   * 引数2 : 時間を確認したい拍数
    * 戻り値 : 時間(ms)
    */
-  function getTimeFromMeasurePoint(measure, point) {
+  SBRS.getTimeFromMeasurePoint = function(measure, point) {
     var bpmIndex = -1;
     var time = 0.0;
     var measureObj = sbrs.measure[measure - 1];
@@ -563,8 +563,7 @@ var SBRS = (function() {
       bpmObj = sbrs.bpm[i];
       if (bpmObj.measure < measure) {
         bpm = sbrs.bpm[i].value;
-      }
-      if (bpmObj.measure === measure) {
+      } else if (bpmObj.measure === measure) {
         if (point >= bpmObj.point) {
           bpm = sbrs.bpm[i].value;
           bpmIndex = i;
@@ -585,7 +584,78 @@ var SBRS = (function() {
       }
     }
     return time;
-  }
+  };
+
+  /* function getMeasurePointFromTime
+   * 時間から小節と拍数を取得します
+   * 引数1 : 時間(ms)
+   * 戻り値 : 小節と拍数を格納したオブジェクト({measure:value, point:value})
+   */
+  SBRS.getMeasurePointFromTime = function(time) {
+
+    var measureIndex;
+    var measureObj;
+    var nextMeasureObj;
+    var measureValue, pointValue;
+    var measureS, measureB;
+    var bpmObj;
+    var bpmIndex;
+    var bpm;
+    var i, iLen;
+
+    measureIndex = sbrs.measureCount - 1;
+
+    // 該当小節確認
+    for (i = 0, iLen = sbrs.measureCount - 1; i < iLen; i++) {
+      measureObj = sbrs.measure[i];
+      nextMeasureObj = sbrs.measure[i + 1];
+      if (time > measureObj.time && time < nextMeasureObj.time) {
+        measureIndex = i;
+        measureValue = measureObj.measure;
+        break;
+      }
+    }
+
+    measureObj = sbrs.measure[measureIndex];
+    measureS = measureObj.valueS;
+    measureB = measureObj.valueB;
+
+    // 該当小節のBPM変更確認
+    bpmIndex = -1;
+    for (i = 0, iLen = sbrs.bpmCount; i < iLen; i++) {
+      bpmObj = sbrs.bpm[i];
+      if (bpmObj.measure < measureValue) {
+        bpm = bpmObj.value;
+      } else if (bpmObj.measure === measureValue) {
+        if (time >= bpmObj.time) {
+          bpmIndex = i;
+        }
+      }
+    }
+
+    if (bpmIndex !== -1) {
+      // 該当小節のBPM変更あり
+
+      bpmObj = sbrs.bpm[bpmIndex];
+
+      // 拍数取得
+      pointValue = bpmObj.point + measureS * ((time - bpmObj.time) / (240000.0 / bpmObj.value * (measureS / measureB)));
+
+    } else {
+      // 該当小節のBPM変更なし
+
+      // 1小節の時間
+      var measureTime = 240000.0 / bpm * (measureS / measureB);
+
+      // 拍数取得
+      pointValue = measureS * ((time - measureObj.time) / measureTime);
+    }
+
+    return {
+      measure: measureValue,
+      point: pointValue
+    };
+  };
 
   /* function addFeverGaugeData
    * フィーバーゲージの長さを取得します
