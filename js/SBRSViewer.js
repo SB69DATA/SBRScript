@@ -43,7 +43,7 @@ var SBRSViewer = (function() {
           try {
             // 譜面描画
             var viewer = SBRSViewer.draw(sbrs);
-
+            
           } catch (e) {
             document.getElementById("view").innerHTML = "譜面の描画に失敗しました";
             console.error(e);
@@ -453,7 +453,7 @@ var SBRSViewer = (function() {
       if(sbrs.bpmCount === 1) {
         viewer.info.bpm = sbrs.maxBpm;
       } else {
-        viewer.info.bpm = sbrs.minBpm + " ～ " + sbrs.maxBpm;
+        viewer.info.bpm = sbrs.minBpm + " - " + sbrs.maxBpm;
       }
       
       // コンボ数設定

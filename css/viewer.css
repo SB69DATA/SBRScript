@@ -45,11 +45,11 @@ ul {
 }
 
 #info ul li .value {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 #info ul li .key {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 #info ul li .description {
