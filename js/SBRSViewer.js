@@ -391,7 +391,7 @@ var SBRSViewer = (function() {
       console.log(backgroundInfo);
 
       // 描画開始時間順にソート
-      backgroundInfo.sort(function(a, b){
+      backgroundInfo.sort(function(a, b) {
         return a.from.time - b.from.time;
       });
 
@@ -411,51 +411,51 @@ var SBRSViewer = (function() {
      */
     function drawBackground(lineAriaDiv, measure, measureS, measureB, backgroundInfo, measureHeight) {
 
-    var i,iLen;
-    var bgInfo;
-    var bgDiv;
-    var bottom;
+      var i, iLen;
+      var bgInfo;
+      var bgDiv;
+      var bottom;
 
-    for(i=0, iLen=backgroundInfo.length; i<iLen; i++) {
+      for (i = 0, iLen = backgroundInfo.length; i < iLen; i++) {
 
-      bgInfo = backgroundInfo[i];
+        bgInfo = backgroundInfo[i];
 
-      if(measure < bgInfo.from.measure) {
-        continue;
+        if (measure < bgInfo.from.measure) {
+          continue;
+        }
+
+        bgDiv = document.createElement("div");
+
+        if (bgInfo.type === 1) {
+          // フィーバー
+          bgDiv.className = "fever-background";
+        } else if (bgInfo.type === 2) {
+          // ボス攻撃
+          bgDiv.className = "boss-background";
+        }
+
+        if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
+          // 開始小節と終了小節が同じ
+
+        } else if (measure === bgInfo.from.measure) {
+          // 開始小節
+          bottom = (bgInfo.from.point * viewer.option.beatHeight * 4 / measureB);
+          bgDiv.style.height = (measureHeight - bottom) + "px";
+          bgDiv.style.bottom = bottom + "px";
+        } else if (measure === bgInfo.to.measure) {
+          // 終了小節
+          bottom = 0;
+          bgDiv.style.height = (bgInfo.to.point * measureS / measureB) * viewer.option.beatHeight + "px";
+          bgDiv.style.bottom = bottom + "px";
+        } else if (measure > bgInfo.from.measure && measure < bgInfo.to.measure) {
+          // 中間
+          bottom = 0;
+          bgDiv.style.height = (measureHeight - bottom) + "px";
+          bgDiv.style.bottom = bottom + "px";
+        }
+
+        lineAriaDiv.appendChild(bgDiv);
       }
-
-      bgDiv = document.createElement("div");
-
-      if(bgInfo.type === 1) {
-        // フィーバー
-        bgDiv.className = "fever-background";
-      } else if(bgInfo.type === 2) {
-        // ボス攻撃
-        bgDiv.className = "boss-background";
-      }
-
-      if(measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
-        // 開始小節と終了小節が同じ
-
-      } else if(measure === bgInfo.from.measure) {
-        // 開始小節
-        bottom = (bgInfo.from.point * viewer.option.beatHeight * 4 / measureB);
-        bgDiv.style.height = (measureHeight - bottom) + "px";
-        bgDiv.style.bottom = bottom + "px";
-      } else if(measure === bgInfo.to.measure) {
-        // 終了小節
-        bottom = 0;
-        bgDiv.style.height = (bgInfo.to.point * measureS / measureB) * viewer.option.beatHeight + "px";
-        bgDiv.style.bottom = bottom + "px";
-      } else if(measure > bgInfo.from.measure && measure < bgInfo.to.measure) {
-        // 中間
-        bottom = 0;
-        bgDiv.style.height = (measureHeight - bottom) + "px";
-        bgDiv.style.bottom = bottom + "px";
-      }
-
-      lineAriaDiv.appendChild(bgDiv);
-    }
 
 
     }
