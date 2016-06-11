@@ -4,10 +4,9 @@
 var SBRSViewer = (function() {
 
   var SBRSViewer = {};
-  var viewer = null;
+  var viewer = {};
 
   function initViewer(sbrs) {
-    viewer = {};
     viewer.sbrs = sbrs;
     viewer.title = "No Title ★0";
     viewer.info = {};
@@ -20,6 +19,9 @@ var SBRSViewer = (function() {
     viewer.info.playercombo = "-";
     viewer.info.bosscombo = "-";
     viewer.info.time = "-";
+  }
+
+  function initOption() {
     viewer.option = {};
     viewer.option.beatHeight = 20;
     viewer.option.laneWidth = 13;
@@ -57,8 +59,11 @@ var SBRSViewer = (function() {
         }
       });
 
-      // ステージタイプの変更イベント登録
-      addStageTypeChangeEvent();
+      // オプションを初期化
+      initOption();
+
+      // イベント登録
+      addEvent();
 
       // フォームの選択状態をリセット
       resetForm();
@@ -68,19 +73,26 @@ var SBRSViewer = (function() {
       console.error(e);
     }
 
-    /* function addStageTypeChangeEvent
-     * ステージタイプの変更イベントを登録します
+    /* function addEvent
+     * イベントを登録します
      * 戻り値 : なし
      */
-    function addStageTypeChangeEvent() {
+    function addEvent() {
 
       var stageTypeElements;
       var i, iLen;
 
+      // ステージタイプの変更イベントを登録
       stageTypeElements = document.getElementsByName("stage-type");
       for (i = 0, iLen = stageTypeElements.length; i < iLen; i++) {
         stageTypeElements[i].addEventListener("change", changeStageType);
       }
+
+      // フィーバーゲージがたまりやすくなるのスキル切り替えイベントを登録
+      document.getElementById("option-skill-fever").addEventListener("change", function(e) {
+        viewer.option.feverGaugeHigh = e.target.checked;
+        SBRSViewer.draw(sbrs);
+      });
     }
 
     /* function resetForm
@@ -428,10 +440,10 @@ var SBRSViewer = (function() {
 
         if (bgInfo.type === 1) {
           // フィーバー
-          bgDiv.className = "fever-background";
+          bgDiv.className = "fever-background type-score";
         } else if (bgInfo.type === 2) {
           // ボス攻撃
-          bgDiv.className = "boss-background";
+          bgDiv.className = "boss-background type-both";
         }
 
         if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
