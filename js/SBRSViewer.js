@@ -25,6 +25,7 @@ var SBRSViewer = (function() {
     viewer.option.laneWidth = 13;
     viewer.option.colBeat = 32;
     viewer.option.markerSize = 13;
+    viewer.option.feverGaugeHigh = false;
   }
 
   window.addEventListener("DOMContentLoaded", function() {
@@ -43,7 +44,7 @@ var SBRSViewer = (function() {
           try {
             // 譜面描画
             var viewer = SBRSViewer.draw(sbrs);
-            
+
           } catch (e) {
             document.getElementById("view").innerHTML = "譜面の描画に失敗しました";
             console.error(e);
@@ -151,13 +152,15 @@ var SBRSViewer = (function() {
     var viewElement;
     var colTable, colTr, colTd;
     var measureTable, measureTr, measureTh, measureTd;
-    var measureIndex, measureIndexLength;
+    var measure, measureIndex, measureIndexLength;
     var measureBeat, measureS, measureB, measureHeight;
     var markerAriaDiv, lineAriaDiv;
     var markerIndex;
     var colDrawBeat;
     var laneCount;
+    var markerHitInfo = [];
     var longMakrerInfo = [];
+    var backgroundInfo = [];
     var i, iLen;
 
     viewElement = document.getElementById("view");
@@ -175,6 +178,12 @@ var SBRSViewer = (function() {
 
     // 描画済みマーカーのindexを初期化
     markerIndex = 0;
+
+    // マーカーの判定などを格納する配列の初期化
+    initMarkerHitInfo(markerHitInfo);
+
+    // フィーバーゲージ、ボス攻撃時間の情報をセット
+    setBackgroundInfo(backgroundInfo, markerHitInfo);
 
     // 全小節の描画が終わるまでループ
     for (measureIndex = 0, measureIndexLength = sbrs.measureCount; measureIndex < measureIndexLength;) {
@@ -196,6 +205,9 @@ var SBRSViewer = (function() {
       // 1列に1小節は必ず表示する
       do {
 
+        // 現在の小節
+        measure = measureIndex + 1;
+
         // 全小節の描画が終わった後は、最終小節の拍子で空の小節データを作成
         if (measureIndex < measureIndexLength) {
           // 拍子の分子と分母、拍数を取得
@@ -206,12 +218,12 @@ var SBRSViewer = (function() {
 
         // 1小節分の行作成
         measureTr = measureTable.insertRow(0);
-        measureTr.id = "measure-" + (measureIndex + 1);
+        measureTr.id = "measure-" + measure;
 
         // 小節のヘッダ作成
         measureTh = document.createElement("th");
         measureTr.appendChild(measureTh);
-        measureTh.innerHTML = (measureIndex + 1);
+        measureTh.innerHTML = measure;
 
         // 小節のデータ作成
         measureHeight = measureBeat * viewer.option.beatHeight - 1;
@@ -231,16 +243,17 @@ var SBRSViewer = (function() {
         markerAriaDiv.style.height = measureHeight + "px";
         measureTd.appendChild(markerAriaDiv);
 
+        // フィーバ中、ボス攻撃中用のバックグラウンドを描画
+        drawBackground(lineAriaDiv, measure, measureS, measureB, backgroundInfo, measureHeight);
+
         // レーンの区切り線、拍子線の描画
         drawLine(lineAriaDiv, measureS, measureB, laneCount);
 
         // ロングマーカーの中間線を描画
-        drawLongLine(markerAriaDiv, measureIndex + 1, measureHeight, longMakrerInfo, colDrawBeat);
-
-        // 前の小節から続くロングマーカーの描画
+        drawLongLine(markerAriaDiv, measure, measureHeight, longMakrerInfo, colDrawBeat);
 
         // マーカーの描画
-        markerIndex = drawMarker(markerAriaDiv, markerIndex, measureIndex + 1, measureHeight, longMakrerInfo);
+        markerIndex = drawMarker(markerAriaDiv, markerIndex, measure, measureHeight, longMakrerInfo);
 
         measureIndex++;
 
@@ -262,6 +275,191 @@ var SBRSViewer = (function() {
 
     return viewer;
 
+    /* function initMarkerHitInfo
+     * マーカーの判定などを格納する配列を初期化します
+     * 引数1 : マーカーの判定などを格納する配列
+     * 戻り値 : なし
+     */
+    function initMarkerHitInfo(markerHitInfo) {
+
+      var markerObj;
+      var longMarkerObj;
+      var i, iLen, j, jLen;
+      var measure;
+
+      for (i = 0, iLen = sbrs.measureCount; i < iLen; i++) {
+        markerHitInfo[i] = [];
+      }
+
+      for (i = 0, iLen = sbrs.markerCount; i < iLen; i++) {
+
+        markerObj = sbrs.marker[i];
+        measure = markerObj.measure;
+
+        markerHitInfo[measure - 1].push({
+          type: markerObj.type,
+          time: markerObj.time,
+          point: markerObj.point,
+          judge: 0
+        });
+
+        if (markerObj.long) {
+          for (j = 0, jLen = markerObj.long.length; j < jLen; j++) {
+
+            longMarkerObj = sbrs.marker[i].long[j];
+            measure = longMarkerObj.measure;
+
+            markerHitInfo[measure - 1].push({
+              type: longMarkerObj.type,
+              time: longMarkerObj.time,
+              point: longMarkerObj.point,
+              judge: 0
+            });
+          }
+        }
+      }
+      console.log(markerHitInfo);
+    }
+
+    /* function setBackgroundInfo
+     * フィーバーゲージ、ボス攻撃時間の情報をセットします
+     * 引数1 : フィーバーゲージ、ボス攻撃時間の情報を格納する配列
+     * 引数2 : マーカーの判定などを格納する配列
+     * 戻り値 : なし
+     */
+    function setBackgroundInfo(backgroundInfo, markerHitInfo) {
+
+      var feverGauge;
+      var measureIndex, measureIndexLength;
+      var normalComboCount, feverComboCount;
+      var hitInfo;
+      var feverEndTime;
+      var hitTime;
+      var hitPoint;
+      var addGaugeIncrement;
+      var toData;
+      var i, iLen;
+
+      feverEndTime = 0;
+      feverGauge = 0;
+      normalComboCount = 0;
+      feverComboCount = 0;
+      addGaugeIncrement = 4 * (viewer.option.feverGaugeHigh ? 7 : 1);
+
+      for (measureIndex = 0, measureIndexLength = sbrs.measureCount; measureIndex < measureIndexLength; measureIndex++) {
+        for (i = 0, iLen = markerHitInfo[measureIndex].length; i < iLen; i++) {
+
+          hitInfo = markerHitInfo[measureIndex][i];
+          hitTime = hitInfo.time;
+          hitPoint = hitInfo.point;
+
+          if (hitTime < feverEndTime) {
+            // フィーバー中
+
+            feverComboCount++;
+
+          } else {
+            // 非フィーバー
+
+            normalComboCount++;
+            feverGauge += addGaugeIncrement;
+          }
+          // フィーバー開始
+          if (feverGauge >= sbrs.feverGaugeLength) {
+
+            feverEndTime = hitTime + 10000;
+            feverGauge = 0;
+
+            toData = SBRS.getMeasurePointFromTime(feverEndTime);
+            backgroundInfo.push({
+              from: {
+                measure: measureIndex + 1,
+                point: hitPoint,
+                time: hitTime
+              },
+              to: {
+                measure: toData.measure,
+                point: toData.point,
+                time: feverEndTime
+              },
+              type: 1
+            });
+          }
+        }
+      }
+
+      console.log(backgroundInfo);
+
+      // 描画開始時間順にソート
+      backgroundInfo.sort(function(a, b){
+        return a.from.time - b.from.time;
+      });
+
+      viewer.info.fevercombo = feverComboCount;
+      viewer.info.bossattack = "-";
+      viewer.info.playercombo = "-";
+      viewer.info.bosscombo = "-";
+    }
+
+    /* function drawBackground
+     * ラインエリアのdiv要素にフィーバー中、ボス攻撃中のバックグラウンドを追加します
+     * 引数1 : ラインdiv要素
+     * 引数2 : 現在の小節
+     * 引数3 : フィーバーゲージ、ボス攻撃時間の情報を格納する配列
+     * 引数4 : 描画エリアの高さ
+     * 戻り値 : なし
+     */
+    function drawBackground(lineAriaDiv, measure, measureS, measureB, backgroundInfo, measureHeight) {
+
+    var i,iLen;
+    var bgInfo;
+    var bgDiv;
+    var bottom;
+
+    for(i=0, iLen=backgroundInfo.length; i<iLen; i++) {
+
+      bgInfo = backgroundInfo[i];
+
+      if(measure < bgInfo.from.measure) {
+        continue;
+      }
+
+      bgDiv = document.createElement("div");
+
+      if(bgInfo.type === 1) {
+        // フィーバー
+        bgDiv.className = "fever-background";
+      } else if(bgInfo.type === 2) {
+        // ボス攻撃
+        bgDiv.className = "boss-background";
+      }
+
+      if(measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
+        // 開始小節と終了小節が同じ
+
+      } else if(measure === bgInfo.from.measure) {
+        // 開始小節
+        bottom = (bgInfo.from.point * viewer.option.beatHeight * 4 / measureB);
+        bgDiv.style.height = (measureHeight - bottom) + "px";
+        bgDiv.style.bottom = bottom + "px";
+      } else if(measure === bgInfo.to.measure) {
+        // 終了小節
+        bottom = 0;
+        bgDiv.style.height = (bgInfo.to.point * measureS / measureB) * viewer.option.beatHeight + "px";
+        bgDiv.style.bottom = bottom + "px";
+      } else if(measure > bgInfo.from.measure && measure < bgInfo.to.measure) {
+        // 中間
+        bottom = 0;
+        bgDiv.style.height = (measureHeight - bottom) + "px";
+        bgDiv.style.bottom = bottom + "px";
+      }
+
+      lineAriaDiv.appendChild(bgDiv);
+    }
+
+
+    }
+
     /* function drawMarker
      * マーカーエリアのdiv要素にマーカーを追加します
      * 引数1 : マーカーdiv要素
@@ -279,9 +477,9 @@ var SBRSViewer = (function() {
       var measureObj;
       var measureB;
 
-      if(measure <= sbrs.measureCount) {
-        
-        measureObj = sbrs.measure[measure-1];
+      if (measure <= sbrs.measureCount) {
+
+        measureObj = sbrs.measure[measure - 1];
         measureB = measureObj.valueB;
 
         for (len = sbrs.markerCount; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
@@ -341,7 +539,7 @@ var SBRSViewer = (function() {
 
     /* function drawLongLine
      * マーカーエリアのdiv要素にロングマーカーの中間線を追加します
-     * 引数1 : 小節データ要素
+     * 引数1 : マーカーdiv要素
      * 引数2 : 現在の小節
      * 引数3 : 描画エリアの高さ
      * 引数4 : ロングマーカーの描画情報
@@ -357,9 +555,9 @@ var SBRSViewer = (function() {
       var measureObj;
       var measureB;
 
-      if(measure <= sbrs.measureCount) {
-        
-        measureObj = sbrs.measure[measure-1];
+      if (measure <= sbrs.measureCount) {
+
+        measureObj = sbrs.measure[measure - 1];
         measureB = measureObj.valueB;
 
         for (i = 0, iLen = laneCount; i < iLen; i++) {
@@ -383,7 +581,7 @@ var SBRSViewer = (function() {
             markerDiv.style.width = longMarkerInfo[i].style.width;
             markerDiv.style.left = longMarkerInfo[i].style.left;
 
-            if(colDrawBeat === 0) {
+            if (colDrawBeat === 0) {
               // 列の1小節目はbottomの位置を1px高めに
               markerDiv.style.bottom = Math.floor(fromY - 0) + "px";
             } else {
@@ -406,8 +604,8 @@ var SBRSViewer = (function() {
     }
 
     /* function drawLine
-     * 拍子線、レーンの区切り線を含むdiv要素を小節データに追加します
-     * 引数1 : 小節データ要素
+     * ラインエリアのdiv要素に拍子線、レーンの区切り線を追加します
+     * 引数1 : ラインdiv要素
      * 引数2 : 拍子の分子
      * 引数3 : 拍子の分母
      * 引数4 : レーン数
@@ -450,18 +648,21 @@ var SBRSViewer = (function() {
       viewer.title = sbrs.title + " ★" + sbrs.level;
 
       // BPM設定
-      if(sbrs.bpmCount === 1) {
+      if (sbrs.bpmCount === 1) {
         viewer.info.bpm = sbrs.maxBpm;
       } else {
         viewer.info.bpm = sbrs.minBpm + " - " + sbrs.maxBpm;
       }
-      
+
       // コンボ数設定
       viewer.info.combo = sbrs.comboCount;
-      
+
       // マーカー数設定
       viewer.info.marker = sbrs.markerCount;
-      
+
+      // ゲージの長さ設定
+      viewer.info.fevergauge = sbrs.feverGaugeLength;
+
       // 演奏時間設定
       viewer.info.time = Math.round(sbrs.endTime / 1000);
     }

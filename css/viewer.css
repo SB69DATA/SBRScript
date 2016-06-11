@@ -170,6 +170,18 @@ ul {
   position: absolute;
 }
 
+#view .fever-background {
+  width: 100%;
+  background : #f88;
+  position: absolute;
+}
+
+#view .boss-background {
+  width: 100%;
+  background : #0f0;
+  position: absolute;
+}
+
 
 /* option */
 
