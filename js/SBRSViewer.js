@@ -279,7 +279,7 @@ var SBRSViewer = (function() {
       var measureObj;
       var measureB;
 
-      if(measure < sbrs.measureCount) {
+      if(measure <= sbrs.measureCount) {
         
         measureObj = sbrs.measure[measure-1];
         measureB = measureObj.valueB;
@@ -357,7 +357,7 @@ var SBRSViewer = (function() {
       var measureObj;
       var measureB;
 
-      if(measure < sbrs.measureCount) {
+      if(measure <= sbrs.measureCount) {
         
         measureObj = sbrs.measure[measure-1];
         measureB = measureObj.valueB;
