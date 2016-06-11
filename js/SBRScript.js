@@ -604,6 +604,7 @@ var SBRS = (function() {
     var i, iLen;
 
     measureIndex = sbrs.measureCount - 1;
+    measureValue = sbrs.measureCount;
 
     // 該当小節確認
     for (i = 0, iLen = sbrs.measureCount - 1; i < iLen; i++) {
@@ -649,6 +650,12 @@ var SBRS = (function() {
 
       // 拍数取得
       pointValue = measureS * ((time - measureObj.time) / measureTime);
+    }
+
+    // 拍数が1小節の拍数以上になった場合
+    if(pointValue > measureS) {
+      measureValue += parseInt(pointValue / measureS);
+      pointValue = pointValue % measureS;
     }
 
     return {
