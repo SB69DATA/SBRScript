@@ -144,10 +144,17 @@ ul {
   background: #ff9;
   position: absolute;
   border: 1px solid #666;
+  display: inline-block;
+}
+
+#view table.col tr td .long-marker .value {
   font-size: 10px;
-  text-align: center;
   font-family: "Arial";
   display: inline-block;
+  width : 39px;
+  text-align : center;
+  left : -14px;
+  position : absolute;
 }
 
 #view table.col tr td .long-line {
@@ -156,6 +163,7 @@ ul {
   border-width: 0 1px 0;
   position: absolute;
   display: inline-block;
+  z-index : 20;
 }
 
 #view table.col tr td .lane-line {
@@ -163,6 +171,7 @@ ul {
   height: 100%;
   background: #aaa;
   position: absolute;
+  z-index : 12;
 }
 
 #view table.col tr td .beat-line {
@@ -170,6 +179,7 @@ ul {
   height: 1px;
   background: #666;
   position: absolute;
+  z-index : 11;
 }
 
 #view table.col tr td .beat-subline {
@@ -177,6 +187,7 @@ ul {
   height: 1px;
   background: #ccc;
   position: absolute;
+  z-index : 10;
 }
 
 #view .fever-background {
