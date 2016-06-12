@@ -56,6 +56,9 @@ var SBRSViewer = (function() {
         // 読み込み失敗
         error: function() {
           document.getElementById("view").innerHTML = "読み込みに失敗しました(path:" + sbrsPath + ")";
+
+          // フォームを無効化
+          disableForm();
         }
       });
 
@@ -108,6 +111,22 @@ var SBRSViewer = (function() {
       document.getElementById("option-skill-fever").checked = false;
       document.getElementById("option-skill-bossattackfrequently").checked = false;
       document.getElementById("option-skill-bossattacktime").checked = false;
+    }
+
+    /* function disableForm
+     * フォームを無効化します
+     * 戻し値 : なし
+     */
+    function disableForm() {
+
+      var elements;
+      var i, iLen;
+
+      elements = document.getElementsByTagName("input");
+
+      for (i = 0, iLen = elements.length; i < iLen; i++) {
+        elements[i].disabled = "disabled";
+      }
     }
 
     /* function changeStageType
