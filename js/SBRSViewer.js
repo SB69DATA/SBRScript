@@ -670,7 +670,7 @@ var SBRSViewer = (function() {
       viewer.info.combo = sbrs.comboCount;
 
       // マーカー数設定
-      viewer.info.marker = sbrs.markerCount;
+      viewer.info.marker = sbrs.normalMarkerCount + sbrs.longMarkerCount;
 
       // ゲージの長さ設定
       viewer.info.fevergauge = sbrs.feverGaugeLength;
