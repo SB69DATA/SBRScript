@@ -464,9 +464,6 @@ var SBRSViewer = (function() {
       bossAttackTime = viewer.option.bossAttackShort ? BOSS_SHORT_ATTACK_TIME : BOSS_ATTACK_TIME;
 
       // ボス攻撃の範囲セット
-
-      console.log(sbrs.endTime)
-      console.log(SBRS.getMeasurePointFromTime(sbrs.endTime))
       while (time + playerAttackTime < sbrs.endTime) {
 
         fromTime = (time += playerAttackTime);
