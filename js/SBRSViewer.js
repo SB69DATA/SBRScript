@@ -554,6 +554,7 @@ var SBRSViewer = (function() {
         if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
           // 開始小節と終了小節が同じ
 
+          // TODO 未実装
         } else if (measure === bgInfo.from.measure) {
           // 開始小節
           bottom = (bgInfo.from.point * viewer.option.beatHeight * 4 / measureB);
@@ -562,7 +563,7 @@ var SBRSViewer = (function() {
         } else if (measure === bgInfo.to.measure) {
           // 終了小節
           bottom = 0;
-          bgDiv.style.height = (bgInfo.to.point * measureS / measureB) * viewer.option.beatHeight + "px";
+          bgDiv.style.height = (bgInfo.to.point * 4 / measureB) * viewer.option.beatHeight + "px";
           bgDiv.style.bottom = bottom + "px";
         } else if (measure > bgInfo.from.measure && measure < bgInfo.to.measure) {
           // 中間
@@ -591,6 +592,7 @@ var SBRSViewer = (function() {
       var len;
       var marker;
       var markerDiv;
+      var markerValueDiv;
       var measureObj;
       var measureB;
 
@@ -620,7 +622,12 @@ var SBRSViewer = (function() {
               // ロング開始
               markerDiv.className = "long-marker";
               markerDiv.style.zIndex = 300 + len - markerIndex;
-              markerDiv.innerHTML = 2 + marker.long.length;
+
+              markerValueDiv = document.createElement("div");
+              markerValueDiv.className = "value";
+              markerDiv.appendChild(markerValueDiv);
+              markerValueDiv.innerHTML = 2 + marker.long.length;
+
               longMakrerInfo[marker.lane - 1] = {
                 start: {
                   measure: marker.measure,
@@ -749,7 +756,7 @@ var SBRSViewer = (function() {
       for (i = 0, iLen = measureS; i < iLen; i++) {
         divTmp = document.createElement("div");
         divTmp.className = "beat-subline";
-        divTmp.style.bottom = (beatHeight * (i+0.5) - 1) + "px";
+        divTmp.style.bottom = (beatHeight * (i + 0.5) - 1) + "px";
         lineAriaDiv.appendChild(divTmp);
       }
 
