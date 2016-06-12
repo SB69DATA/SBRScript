@@ -737,19 +737,27 @@ var SBRSViewer = (function() {
 
       beatHeight = viewer.option.beatHeight * 4 / measureB;
 
-      // レーンの線
-      for (i = 1, iLen = laneCount; i < iLen; i++) {
-        divTmp = document.createElement("div");
-        divTmp.className = "lane-line";
-        divTmp.style.left = ((viewer.option.laneWidth + 1) * i + -1) + "px";
-        lineAriaDiv.appendChild(divTmp);
-      }
-
       // 拍子の線
       for (i = 1, iLen = measureS; i < iLen; i++) {
         divTmp = document.createElement("div");
         divTmp.className = "beat-line";
         divTmp.style.bottom = (beatHeight * i - 1) + "px";
+        lineAriaDiv.appendChild(divTmp);
+      }
+
+      // 拍子の線2
+      for (i = 0, iLen = measureS; i < iLen; i++) {
+        divTmp = document.createElement("div");
+        divTmp.className = "beat-subline";
+        divTmp.style.bottom = (beatHeight * (i+0.5) - 1) + "px";
+        lineAriaDiv.appendChild(divTmp);
+      }
+
+      // レーンの線
+      for (i = 1, iLen = laneCount; i < iLen; i++) {
+        divTmp = document.createElement("div");
+        divTmp.className = "lane-line";
+        divTmp.style.left = ((viewer.option.laneWidth + 1) * i + -1) + "px";
         lineAriaDiv.appendChild(divTmp);
       }
     }
