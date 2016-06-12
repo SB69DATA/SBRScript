@@ -6,6 +6,13 @@ var SBRSViewer = (function() {
   var SBRSViewer = {};
   var viewer = {};
 
+  var PLAYER_ATTACK_TIME = 10000;
+  var PLAYER_LONG_ATTACK_TIME = 22000;
+  var BOSS_ATTACK_TIME = 8500;
+  var BOSS_SHORT_ATTACK_TIME = 7000;
+  var FEVER_TIME = 10000;
+  var DEFAULT_START_OFFSET = -2500;
+
   function initViewer(sbrs) {
     viewer.sbrs = sbrs;
     viewer.title = "No Title ★0";
@@ -27,7 +34,10 @@ var SBRSViewer = (function() {
     viewer.option.laneWidth = 13;
     viewer.option.colBeat = 32;
     viewer.option.markerSize = 13;
+    viewer.option.startOffset = DEFAULT_START_OFFSET;
     viewer.option.feverGaugeHigh = false;
+    viewer.option.bossAttackFrequently = false;
+    viewer.option.bossAttackShort = false;
   }
 
   window.addEventListener("DOMContentLoaded", function() {
@@ -96,6 +106,20 @@ var SBRSViewer = (function() {
         viewer.option.feverGaugeHigh = e.target.checked;
         SBRSViewer.draw(sbrs);
       });
+
+      // ボスの攻撃頻度を下げるのスキル切り替えイベントを登録
+      document.getElementById("option-skill-bossattackfrequently").addEventListener("change", function(e) {
+        viewer.option.bossAttackFrequently = e.target.checked;
+        SBRSViewer.draw(sbrs);
+        changeStageType();
+      });
+
+      // ボスの攻撃時間が短くなるのスキル切り替えイベントを登録
+      document.getElementById("option-skill-bossattackshort").addEventListener("change", function(e) {
+        viewer.option.bossAttackShort = e.target.checked;
+        SBRSViewer.draw(sbrs);
+        changeStageType();
+      });
     }
 
     /* function resetForm
@@ -110,7 +134,7 @@ var SBRSViewer = (function() {
       // スキルの使用有無をリセット
       document.getElementById("option-skill-fever").checked = false;
       document.getElementById("option-skill-bossattackfrequently").checked = false;
-      document.getElementById("option-skill-bossattacktime").checked = false;
+      document.getElementById("option-skill-bossattackshort").checked = false;
     }
 
     /* function disableForm
@@ -178,8 +202,6 @@ var SBRSViewer = (function() {
 
     // デバッグ用
     console.log(sbrs);
-    var drawStart = performance.now();
-
     var viewElement;
     var colTable, colTr, colTd;
     var measureTable, measureTr, measureTh, measureTd;
@@ -301,9 +323,6 @@ var SBRSViewer = (function() {
     // 情報エリアを更新
     updateInfo();
 
-    // デバッグ用
-    console.log(performance.now() - drawStart);
-
     return viewer;
 
     /* function initMarkerHitInfo
@@ -318,18 +337,15 @@ var SBRSViewer = (function() {
       var i, iLen, j, jLen;
       var measure;
 
-      for (i = 0, iLen = sbrs.measureCount; i < iLen; i++) {
-        markerHitInfo[i] = [];
-      }
-
       for (i = 0, iLen = sbrs.markerCount; i < iLen; i++) {
 
         markerObj = sbrs.marker[i];
         measure = markerObj.measure;
 
-        markerHitInfo[measure - 1].push({
+        markerHitInfo.push({
           type: markerObj.type,
           time: markerObj.time,
+          measure: measure,
           point: markerObj.point,
           judge: 0
         });
@@ -340,15 +356,21 @@ var SBRSViewer = (function() {
             longMarkerObj = sbrs.marker[i].long[j];
             measure = longMarkerObj.measure;
 
-            markerHitInfo[measure - 1].push({
+            markerHitInfo.push({
               type: longMarkerObj.type,
               time: longMarkerObj.time,
+              measure: measure,
               point: longMarkerObj.point,
               judge: 0
             });
           }
         }
       }
+
+      // 時間順でソート
+      markerHitInfo.sort(function(a, b) {
+        return a.time - b.time;
+      });
       console.log(markerHitInfo);
     }
 
@@ -368,8 +390,15 @@ var SBRSViewer = (function() {
       var hitTime;
       var hitPoint;
       var addGaugeIncrement;
-      var toData;
+      var playerAttackTime, bossAttackTime;
+      var bossAttackCount;
+      var playerComboCount, bossComboCount;
+      var fromTime, toTime;
+      var fromData, toData;
+      var time;
+      var markerIndex;
       var i, iLen;
+      var markerHitIndex, markerHitLength;
 
       feverEndTime = 0;
       feverGauge = 0;
@@ -377,10 +406,15 @@ var SBRSViewer = (function() {
       feverComboCount = 0;
       addGaugeIncrement = 4 * (viewer.option.feverGaugeHigh ? 7 : 1);
 
-      for (measureIndex = 0, measureIndexLength = sbrs.measureCount; measureIndex < measureIndexLength; measureIndex++) {
-        for (i = 0, iLen = markerHitInfo[measureIndex].length; i < iLen; i++) {
+      markerHitIndex = 0;
+      markerHitLength = markerHitInfo.length;
 
-          hitInfo = markerHitInfo[measureIndex][i];
+      // フィーバーゲージの範囲セット
+      for (measureIndex = 0, measureIndexLength = sbrs.measureCount; measureIndex < measureIndexLength; measureIndex++) {
+
+        while (markerHitIndex < markerHitLength && markerHitInfo[markerHitIndex].measure === measureIndex + 1) {
+
+          hitInfo = markerHitInfo[markerHitIndex];
           hitTime = hitInfo.time;
           hitPoint = hitInfo.point;
 
@@ -398,7 +432,7 @@ var SBRSViewer = (function() {
           // フィーバー開始
           if (feverGauge >= sbrs.feverGaugeLength) {
 
-            feverEndTime = hitTime + 10000;
+            feverEndTime = hitTime + FEVER_TIME;
             feverGauge = 0;
 
             toData = SBRS.getMeasurePointFromTime(feverEndTime);
@@ -416,7 +450,62 @@ var SBRSViewer = (function() {
               type: 1
             });
           }
+          markerHitIndex++;
         }
+      }
+
+
+      markerHitIndex = 0;
+      bossAttackCount = 0;
+      playerComboCount = 0;
+      bossComboCount = 0;
+      time = viewer.option.startOffset;
+      playerAttackTime = viewer.option.bossAttackFrequently ? PLAYER_LONG_ATTACK_TIME : PLAYER_ATTACK_TIME;
+      bossAttackTime = viewer.option.bossAttackShort ? BOSS_SHORT_ATTACK_TIME : BOSS_ATTACK_TIME;
+
+      // ボス攻撃の範囲セット
+
+      console.log(sbrs.endTime)
+      console.log(SBRS.getMeasurePointFromTime(sbrs.endTime))
+      while (time + playerAttackTime < sbrs.endTime) {
+
+        fromTime = (time += playerAttackTime);
+        toTime = (time += bossAttackTime);
+        fromData = SBRS.getMeasurePointFromTime(fromTime);
+        toData = SBRS.getMeasurePointFromTime(toTime);
+
+        backgroundInfo.push({
+          from: {
+            measure: fromData.measure,
+            point: fromData.point,
+            time: fromTime
+          },
+          to: {
+            measure: toData.measure,
+            point: toData.point,
+            time: toTime
+          },
+          type: 2
+        });
+
+        // 通常マーカーのカウント
+        while (markerHitIndex < markerHitLength && markerHitInfo[markerHitIndex].time < fromTime) {
+          playerComboCount++;
+          markerHitIndex++;
+        }
+
+        // BOSSアタックマーカーのカウント
+        while (markerHitIndex < markerHitLength && markerHitInfo[markerHitIndex].time < toTime) {
+          bossComboCount++;
+          markerHitIndex++;
+        }
+
+        bossAttackCount++;
+      }
+      // 通常マーカーのカウント
+      while (markerHitIndex < markerHitLength) {
+        playerComboCount++;
+        markerHitIndex++;
       }
 
       console.log(backgroundInfo);
@@ -427,9 +516,9 @@ var SBRSViewer = (function() {
       });
 
       viewer.info.fevercombo = feverComboCount;
-      viewer.info.bossattack = "-";
-      viewer.info.playercombo = "-";
-      viewer.info.bosscombo = "-";
+      viewer.info.bossattack = bossAttackCount;
+      viewer.info.playercombo = playerComboCount;
+      viewer.info.bosscombo = bossComboCount;
     }
 
     /* function drawBackground
@@ -462,7 +551,7 @@ var SBRSViewer = (function() {
           bgDiv.className = "fever-background type-score";
         } else if (bgInfo.type === 2) {
           // ボス攻撃
-          bgDiv.className = "boss-background type-both";
+          bgDiv.className = "boss-background type-boss";
         }
 
         if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
