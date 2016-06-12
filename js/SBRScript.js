@@ -23,6 +23,8 @@ var SBRS = (function() {
     sbrs.bpmCount = 0; // BPMオブジェクト数
     sbrs.measureCount = 0; // 小節オブジェクト数
     sbrs.markerCount = 0; // マーカーオブジェクト数(ロングマーカーのホールド除く)
+    sbrs.normalMarkerCount = 0; // 通常マーカーオブジェクトの数
+    sbrs.longMarkerCount = 0; // ロングマーカーオブジェクトの数
     sbrs.maxBpm = 0; // BPMの最大値
     sbrs.minBpm = 0; // BPMの最小値
     sbrs.comboCount = 0; // コンボ数の理論値
@@ -264,6 +266,9 @@ var SBRS = (function() {
     sbrs.bpmCount = sbrs.bpm.length;
     sbrs.measureCount = sbrs.measure.length;
     sbrs.markerCount = sbrs.marker.length;
+
+    // マーカー数
+    markerCount();
 
     // BPMの最大、最小値取得
     sbrs.maxBpm = Math.max.apply(null, bpmValueArray);
@@ -653,7 +658,7 @@ var SBRS = (function() {
     }
 
     // 拍数が1小節の拍数以上になった場合
-    if(pointValue > measureS) {
+    if (pointValue > measureS) {
       measureValue += parseInt(pointValue / measureS);
       pointValue = pointValue % measureS;
     }
@@ -699,6 +704,28 @@ var SBRS = (function() {
       }
     }
     return count;
+  }
+
+  /* function markerCount
+   * マーカーオブジェクトの数をカウントします
+   * 戻り値 : なし
+   */
+  function markerCount() {
+
+    var i, iLen;
+
+    for (i = 0, iLen = sbrs.marker.length; i < iLen; i++) {
+      switch (sbrs.marker[i].type) {
+        case 1:
+          sbrs.normalMarkerCount++;
+          break;
+        case 2:
+          sbrs.longMarkerCount++;
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   return SBRS;
