@@ -615,7 +615,7 @@ var SBRS = (function() {
     for (i = 0, iLen = sbrs.measureCount - 1; i < iLen; i++) {
       measureObj = sbrs.measure[i];
       nextMeasureObj = sbrs.measure[i + 1];
-      if (time > measureObj.time && time < nextMeasureObj.time) {
+      if (time >= measureObj.time && time < nextMeasureObj.time) {
         measureIndex = i;
         measureValue = measureObj.measure;
         break;
