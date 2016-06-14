@@ -8,6 +8,12 @@ body {
   font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
   min-width: 100%;
   display: inline-block;
+  opacity : 0;
+}
+
+body.fadein {
+  transition : opacity 0.6s;
+  opacity : 1;
 }
 
 ul {
@@ -18,7 +24,7 @@ ul {
 /* title */
 
 #title {
-  margin: 10px;
+  margin: 5px 10px;
 }
 
 #title h1 {
@@ -26,7 +32,7 @@ ul {
   font-weight: bold;
   padding: 5px;
   text-decoration: underline;
-  color : #0272b5;
+  color: #0272b5;
 }
 
 
@@ -34,7 +40,10 @@ ul {
 
 #info {
   padding: 0px 10px;
-  background: #def;
+  background: #83c5ff;
+  color : #fff;
+  border : solid #666;;
+  border-width : 1px 0;
 }
 
 #info ul li {
@@ -64,6 +73,7 @@ ul {
   padding: 5px;
   display: none;
   z-index: 9999;
+  color : #000;
 }
 
 #info ul li:hover {
@@ -84,10 +94,11 @@ ul {
 /* view */
 
 #view {
-  margin: 10px 5px;
+  margin: 10px 5px 0;
   padding: 10px 5px;
-  border: 1px solid #000;
+  border: 2px solid #9cf;
   display: inline-block;
+  background : #eff7ff;
 }
 
 #view > table {
@@ -107,7 +118,7 @@ ul {
 #view table.col tr th {
   width: 20px;
   max-width: 20px;
-  background: #def;
+  background: #b9deff;
   border: solid #000;
   border-width: 0 1px 1px 0;
   font-size: 10px;
@@ -119,6 +130,7 @@ ul {
   border: solid #000;
   border-width: 0 1px 1px 0;
   position: relative;
+  background : #fafafa;
 }
 
 #view table.col tr td .line-aria {
@@ -151,10 +163,10 @@ ul {
   font-size: 10px;
   font-family: "Arial";
   display: inline-block;
-  width : 39px;
-  text-align : center;
-  left : -14px;
-  position : absolute;
+  width: 39px;
+  text-align: center;
+  left: -14px;
+  position: absolute;
 }
 
 #view table.col tr td .long-line {
@@ -163,7 +175,7 @@ ul {
   border-width: 0 1px 0;
   position: absolute;
   display: inline-block;
-  z-index : 20;
+  z-index: 20;
 }
 
 #view table.col tr td .lane-line {
@@ -171,7 +183,7 @@ ul {
   height: 100%;
   background: #aaa;
   position: absolute;
-  z-index : 12;
+  z-index: 12;
 }
 
 #view table.col tr td .beat-line {
@@ -179,7 +191,7 @@ ul {
   height: 1px;
   background: #666;
   position: absolute;
-  z-index : 11;
+  z-index: 11;
 }
 
 #view table.col tr td .beat-subline {
@@ -187,23 +199,56 @@ ul {
   height: 1px;
   background: #ccc;
   position: absolute;
-  z-index : 10;
+  z-index: 10;
 }
 
 #view .fever-background {
   width: 100%;
-  background : #ebf6ff;
+  background: #d0ebff;
   position: absolute;
 }
 
 #view .boss-background {
   width: 100%;
-  background : #f2c8ff;
+  background: #f2c8ff;
   position: absolute;
 }
 
 
 /* option */
+
+#option {
+  margin: 0 5px 10px;
+  padding: 0px 5px;
+  border: 2px solid #9cf;
+  width : 440px;
+}
+
+#option legend input + label {
+  padding-left : 12px;
+  cursor : pointer;
+}
+
+#option legend input + label::before {
+  display : none;
+}
+
+#option legend input + label::after {
+  border : solid #000;
+  border-width : 1px 1px 0 0;
+  border-radius : 0;
+  background : inherit;
+  transform : rotate(45deg);
+  left : -3px;
+}
+
+#option legend input:checked + label {
+  text-decoration : underline;
+}
+
+#option .option-display {
+  display : none;
+}
 
 
 /* form-style */
@@ -266,7 +311,7 @@ input[type=radio]:checked + label:after {
   left: 5px;
   width: 8px;
   height: 8px;
-  background: #555;
+  background: #88b2ff;
   border-radius: 8px;
 }
 
@@ -275,8 +320,8 @@ input[type=checkbox]:checked + label:after {
   left: 3px;
   width: 14px;
   height: 8px;
-  border-left: 3px solid #555;
-  border-bottom: 3px solid #555;
+  border-left: 3px solid #88b2ff;
+  border-bottom: 3px solid #88b2ff;
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
 }

@@ -5,101 +5,128 @@
   <meta charset="utf-8" />
   <meta name="format-detection" content="telephone=no">
   <title>SB69 Score Viewer</title>
-  <link rel="icon" href="img/icon.png">
-  <link rel="stylesheet" href="css/viewer.css" />
+  <link href="img/icon.png" rel="icon">
+  <link href="css/viewer.css" rel="stylesheet" />
   <script src="js/SBRScript.js"></script>
   <script src="js/SBRSViewer.js"></script>
 </head>
 
 <body>
   <div id="title">
-    <h1 class="value">No Title ★0</h1></div>
+    <h1 class="value">No Title ★0</h1>
+  </div>
   <div id="info">
     <ul>
       <li id="info-bpm" class="type-both">
         <div class="value">-</div>
         <div class="key">BPM</div>
         <div class="description">
-          曲のBPMです。
+          <p>曲のBPMです。</p>
         </div>
       </li>
       <li id="info-combo" class="type-both">
         <div class="value">-</div>
         <div class="key">COMBO</div>
         <div class="description">
-          この譜面のMAX COMBOの最大値です。
+          <p>この譜面のMAX COMBOの最大値です。</p>
         </div>
       </li>
       <li id="info-marker" class="type-both">
         <div class="value">-</div>
         <div class="key">MARKER</div>
         <div class="description">
-          この譜面のマーカーの数です。 ロングマーカーは長さに関係なく、マーカー1つとしてカウントしています。
+          <p>この譜面のマーカーの数です。 ロングマーカーは長さに関係なく、マーカー1つとしてカウントしています。</p>
         </div>
       </li>
       <li id="info-fevercombo" class="type-score">
         <div class="value">-</div>
         <div class="key">FEVER-COMBO</div>
         <div class="description">
-          常に最適なタイミングでマーカーをタップした場合に、 フィーバー中に増加するコンボ数の目安です。
+          <p>常に最適なタイミングでマーカーをタップした場合に、 フィーバー中に増加するコンボ数の目安です。</p>
         </div>
       </li>
       <li id="info-fevergauge" class="type-score">
         <div class="value">-</div>
         <div class="key">FEVER-GAUGE</div>
         <div class="description">
-          フィーバーゲージの長さです。 PERFECT～MISSの判定により、それぞれ4,2,1,-1と増加し、 この値を超えるとフィーバーになります。
-          「フィーバーゲージがたまりやすくなる」のスキルを使用している場合、増加量が7倍になります。
+          <p>フィーバーゲージの長さです。 PERFECT～MISSの判定により、それぞれ4,2,1,-1と増加し、 この値を超えるとフィーバーになります。</p>
+          <p>「フィーバーゲージがたまりやすくなる」のスキルを使用している場合、増加量が7倍になります。</p>
         </div>
       </li>
       <li id="info-bossattack" class="type-boss">
         <div class="value">-</div>
         <div class="key">BOSS-ATTACK</div>
         <div class="description">
-          ボスの暴走回数です。
+          <p>ボスの暴走回数です。</p>
         </div>
       </li>
       <li id="info-playercombo" class="type-boss">
         <div class="value">-</div>
         <div class="key">PLAYER-COMBO</div>
         <div class="description">
-          ボスが暴走していない時のコンボ数の目安です。
+          <p>ボスが暴走していない時のコンボ数の目安です。</p>
         </div>
       </li>
       <li id="info-bosscombo" class="type-boss">
         <div class="value">-</div>
         <div class="key">BOSS-COMBO</div>
         <div class="description">
-          ボスが暴走している時のコンボ数の目安です。
+          <p>ボスが暴走している時のコンボ数の目安です。</p>
         </div>
       </li>
       <li id="info-time" class="type-both">
         <div class="value">-</div>
         <div class="key">TIME</div>
         <div class="description">
-          演奏時間の目安です。
+          <p>演奏時間の目安です。</p>
         </div>
       </li>
     </ul>
   </div>
   <div id="view"></div>
-  <div id="option">
-    <fieldset>
-      <input type="radio" id="stage-type-score" name="stage-type" checked />
-      <label for="stage-type-score">スコアアタック</label>
-      <input type="radio" id="stage-type-boss" name="stage-type" />
-      <label for="stage-type-boss">BOSSバトル</label>
+  <div>
+    <fieldset id="option">
+      <legend>
+        オプション
+        <span>[</span>
+        <input type="radio" id="option-skill" name="option" checked />
+        <label for="option-skill">スキル設定</label>
+        <span>|</span>
+        <input type="radio" id="option-display" name="option" />
+        <label for="option-display">表示設定</label>
+        <span>]</span>
+      </legend>
+      <div class="option-skill">
+        <input type="radio" id="stage-type-score" name="stage-type" checked />
+        <label for="stage-type-score">スコアアタック</label>
+        <input type="radio" id="stage-type-boss" name="stage-type" />
+        <label for="stage-type-boss">BOSSバトル</label>
+        <div class="type-score">
+          <input type="checkbox" id="option-skill-fever" />
+          <label for="option-skill-fever">フィーバーゲージがたまりやすくなる</label>
+        </div>
+        <div class="type-boss">
+          <input type="checkbox" id="option-skill-bossattackfrequently" />
+          <label for="option-skill-bossattackfrequently">ボスの攻撃頻度を下げる</label>
+          <input type="checkbox" id="option-skill-bossattackshort" />
+          <label for="option-skill-bossattackshort">ボスの攻撃時間が短くなる</label>
+        </div>
+      </div>
+      <div class="option-display">
+        <label>レーンの幅</label>
+        <label>拍の高さ</label>
+        <label>マーカーの大きさ</label>
+        <label>1列の拍数</label>
+        <label>フォントサイズ</label>
+      </div>
     </fieldset>
-    <fieldset class="type-score">
-      <input type="checkbox" id="option-skill-fever" />
-      <label for="option-skill-fever">フィーバーゲージがたまりやすくなる</label>
-    </fieldset>
-    <fieldset class="type-boss">
-      <input type="checkbox" id="option-skill-bossattackfrequently" />
-      <label for="option-skill-bossattackfrequently">ボスの攻撃頻度を下げる</label>
-      <input type="checkbox" id="option-skill-bossattackshort" />
-      <label for="option-skill-bossattackshort">ボスの攻撃時間が短くなる</label>
-    </fieldset>
+    <!--
+    <div id="setting">
+      <label><input type="checkbox" />表示設定</label>
+      <div class="popup">
+      </div>
+    </div>
+    -->
   </div>
 </body>
 

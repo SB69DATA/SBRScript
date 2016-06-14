@@ -92,13 +92,19 @@ var SBRSViewer = (function() {
      */
     function addEvent() {
 
-      var stageTypeElements;
+      var elements;
       var i, iLen;
 
       // ステージタイプの変更イベントを登録
-      stageTypeElements = document.getElementsByName("stage-type");
-      for (i = 0, iLen = stageTypeElements.length; i < iLen; i++) {
-        stageTypeElements[i].addEventListener("change", changeStageType);
+      elements = document.getElementsByName("stage-type");
+      for (i = 0, iLen = elements.length; i < iLen; i++) {
+        elements[i].addEventListener("change", changeStageType);
+      }
+
+      // オプションの変更イベントを登録
+      elements = document.getElementsByName("option");
+      for (i = 0, iLen = elements.length; i < iLen; i++) {
+        elements[i].addEventListener("change", changeOption);
       }
 
       // フィーバーゲージがたまりやすくなるのスキル切り替えイベントを登録
@@ -189,6 +195,45 @@ var SBRSViewer = (function() {
       typeBossElements = document.getElementsByClassName("type-boss");
       for (i = 0, iLen = typeBossElements.length; i < iLen; i++) {
         typeBossElements[i].style.display = typeBossStyle;
+      }
+    }
+
+    /* function changeOption
+     * オプションで設定可能な項目を切り替えます
+     * 戻り値 : なし
+     */
+    function changeOption() {
+
+      var selectOption;
+      var typeSkillElements, typeDisplayElements;
+      var typeSkillStyle, typeDisplayStyle;
+      var i, iLen;
+
+      // 選択されているオプションを取得("skill" : スキル設定, "display" : 表示設定)
+      selectOption = document.getElementById("option-skill").checked ? "skill" : "display";
+
+      // displayプロパティに適用する値を指定
+      switch (selectOption) {
+        case "skill":
+          typeSkillStyle = "block";
+          typeDisplayStyle = "none";
+          break;
+        case "display":
+          typeSkillStyle = "none";
+          typeDisplayStyle = "block";
+          break;
+      }
+
+      // スキル設定選択時にのみ表示する要素のdisplayプロパティに値を設定
+      typeSkillElements = document.getElementsByClassName("option-skill");
+      for (i = 0, iLen = typeSkillElements.length; i < iLen; i++) {
+        typeSkillElements[i].style.display = typeSkillStyle;
+      }
+
+      // 表示設定選択時にのみ表示する要素のdisplayプロパティに値を設定
+      typeDisplayElements = document.getElementsByClassName("option-display");
+      for (i = 0, iLen = typeDisplayElements.length; i < iLen; i++) {
+        typeDisplayElements[i].style.display = typeDisplayStyle;
       }
     }
   });
@@ -322,6 +367,9 @@ var SBRSViewer = (function() {
 
     // 情報エリアを更新
     updateInfo();
+
+    // フェードイン
+    document.body.className = "fadein";
 
     return viewer;
 
