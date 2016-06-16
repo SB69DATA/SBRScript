@@ -13,6 +13,8 @@ var SBRSViewer = (function() {
   var FEVER_TIME = 10000;
   var DEFAULT_START_OFFSET = -2500;
 
+  var VIEWER_STORAGE_KEY = "VIEWER_OPTION_DATA";
+
   function initViewer(sbrs) {
     viewer.sbrs = sbrs;
     viewer.title = "No Title ★0";
@@ -34,10 +36,20 @@ var SBRSViewer = (function() {
     viewer.option.laneWidth = 13;
     viewer.option.colBeat = 32;
     viewer.option.markerSize = 13;
+    viewer.option.fontSize = 10;
     viewer.option.startOffset = DEFAULT_START_OFFSET;
+    viewer.option.stageType = "score";
     viewer.option.feverGaugeHigh = false;
     viewer.option.bossAttackFrequently = false;
     viewer.option.bossAttackShort = false;
+  }
+
+  function ScoreViewerOptionStorage(option) {
+    this.beatHeight = option.beatHeight;
+    this.laneWidth = option.laneWidth;
+    this.colBeat = option.colBeat;
+    this.markerSize = option.markerSize;
+    this.fontSize = option.fontSize;
   }
 
   window.addEventListener("DOMContentLoaded", function() {
@@ -81,6 +93,9 @@ var SBRSViewer = (function() {
       // フォームの選択状態をリセット
       resetForm();
 
+      // 保存した表示設定を反映
+      loadLocalStorageOption();
+
     } catch (e) {
       document.getElementById("view").innerHTML = "パラメータエラー";
       console.error(e);
@@ -117,15 +132,105 @@ var SBRSViewer = (function() {
       document.getElementById("option-skill-bossattackfrequently").addEventListener("change", function(e) {
         viewer.option.bossAttackFrequently = e.target.checked;
         SBRSViewer.draw(sbrs);
-        changeStageType();
       });
 
       // ボスの攻撃時間が短くなるのスキル切り替えイベントを登録
       document.getElementById("option-skill-bossattackshort").addEventListener("change", function(e) {
         viewer.option.bossAttackShort = e.target.checked;
         SBRSViewer.draw(sbrs);
-        changeStageType();
       });
+
+      // レーンの幅変更
+      document.getElementById("display-lane-width").addEventListener("change", function(e) {
+        viewer.option.laneWidth = parseInt(e.target.value);
+        SBRSViewer.draw(sbrs);
+      });
+
+      // 拍の高さ変更
+      document.getElementById("display-beat-height").addEventListener("change", function(e) {
+        viewer.option.beatHeight = parseInt(e.target.value);
+        SBRSViewer.draw(sbrs);
+      });
+
+      // 1列の拍数変更
+      document.getElementById("display-col-beat").addEventListener("change", function(e) {
+        viewer.option.colBeat = parseInt(e.target.value);
+        SBRSViewer.draw(sbrs);
+      });
+
+      // マーカーの大きさ変更
+      document.getElementById("display-marker-size").addEventListener("change", function(e) {
+        viewer.option.markerSize = parseInt(e.target.value);
+        SBRSViewer.draw(sbrs);
+      });
+
+      // フォントサイズ変更
+      document.getElementById("display-font-size").addEventListener("change", function(e) {
+        viewer.option.fontSize = parseInt(e.target.value);
+        SBRSViewer.draw(sbrs);
+      });
+
+      // オプションの保存
+      document.getElementById("option-save").addEventListener("click", function(e) {
+        var storage = new ScoreViewerOptionStorage(viewer.option);
+        if (confirm("表示設定の内容を保存します。よろしいですか？")) {
+          try {
+            localStorage.setItem(VIEWER_STORAGE_KEY, JSON.stringify(storage));
+            alert("保存しました");
+          } catch (ex) {
+            alert("保存に失敗しました");
+          }
+        }
+      });
+
+      // オプションのリセット
+      document.getElementById("option-reset").addEventListener("click", function(e) {
+
+        var storage = new ScoreViewerOptionStorage(viewer.option);
+        if (confirm("表示設定の内容をリセットします。よろしいですか？")) {
+          try {
+            localStorage.removeItem(VIEWER_STORAGE_KEY);
+            loadLocalStorageOption();
+            SBRSViewer.draw(sbrs);
+            alert("リセットしました");
+          } catch (ex) {
+            alert("リセットに失敗しました");
+          }
+        }
+      });
+    }
+
+    /* function loadLocalStorageOption
+     * ローカルストレージに保存したオプションを読み込み、反映します
+     * 戻り値 : なし
+     */
+    function loadLocalStorageOption() {
+
+      var item;
+      var option;
+
+      if ((item = localStorage.getItem(VIEWER_STORAGE_KEY))) {
+        option = JSON.parse(item);
+        viewer.option.beatHeight = option.beatHeight;
+        viewer.option.laneWidth = option.laneWidth;
+        viewer.option.colBeat = option.colBeat;
+        viewer.option.markerSize = option.markerSize;
+        viewer.option.fontSize = option.fontSize;
+      } else {
+        viewer.option.beatHeight = 20;
+        viewer.option.laneWidth = 13;
+        viewer.option.colBeat = 32;
+        viewer.option.markerSize = 13;
+        viewer.option.fontSize = 10;
+        option = viewer.option;
+      }
+
+      document.getElementById("display-lane-width").value = option.laneWidth;
+      document.getElementById("display-beat-height").value = option.beatHeight;
+      document.getElementById("display-col-beat").value = option.colBeat;
+      document.getElementById("display-marker-size").value = option.markerSize;
+      document.getElementById("display-font-size").value = option.fontSize;
+
     }
 
     /* function resetForm
@@ -172,6 +277,8 @@ var SBRSViewer = (function() {
 
       // 選択されているステージタイプを取得("score" : スコアアタック, "boss" : BOSSバトル)
       stageType = document.getElementById("stage-type-score").checked ? "score" : "boss";
+
+      viewer.option.stageType = stageType;
 
       // displayプロパティに適用する値を指定
       switch (stageType) {
@@ -594,9 +701,11 @@ var SBRSViewer = (function() {
         if (bgInfo.type === 1) {
           // フィーバー
           bgDiv.className = "fever-background type-score";
+          bgDiv.style.display = viewer.option.stageType === "score" ? "block" : "none";
         } else if (bgInfo.type === 2) {
           // ボス攻撃
           bgDiv.className = "boss-background type-boss";
+          bgDiv.style.display = viewer.option.stageType === "boss" ? "block" : "none";
         }
 
         if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
@@ -675,6 +784,9 @@ var SBRSViewer = (function() {
               markerValueDiv.className = "value";
               markerDiv.appendChild(markerValueDiv);
               markerValueDiv.innerHTML = 2 + marker.long.length;
+              //markerValueDiv.style.fontSize = (viewer.option.fontSize) + "px";
+              markerValueDiv.style.webkitTransform = "scale(" + (viewer.option.fontSize / 10) + ")";
+              markerValueDiv.style.transform = "scale(" + (viewer.option.fontSize / 10) + ")";
 
               longMakrerInfo[marker.lane - 1] = {
                 start: {

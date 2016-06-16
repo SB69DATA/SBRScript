@@ -8,12 +8,12 @@ body {
   font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
   min-width: 100%;
   display: inline-block;
-  opacity : 0;
+  opacity: 0;
 }
 
 body.fadein {
-  transition : opacity 0.6s;
-  opacity : 1;
+  transition: opacity 0.6s;
+  opacity: 1;
 }
 
 ul {
@@ -41,9 +41,10 @@ ul {
 #info {
   padding: 0px 10px;
   background: #83c5ff;
-  color : #fff;
-  border : solid #666;;
-  border-width : 1px 0;
+  color: #fff;
+  border: solid #666;
+  ;
+  border-width: 1px 0;
 }
 
 #info ul li {
@@ -73,7 +74,7 @@ ul {
   padding: 5px;
   display: none;
   z-index: 9999;
-  color : #000;
+  color: #000;
 }
 
 #info ul li:hover {
@@ -98,7 +99,7 @@ ul {
   padding: 10px 5px;
   border: 2px solid #9cf;
   display: inline-block;
-  background : #eff7ff;
+  background: #eff7ff;
 }
 
 #view > table {
@@ -130,7 +131,7 @@ ul {
   border: solid #000;
   border-width: 0 1px 1px 0;
   position: relative;
-  background : #fafafa;
+  background: #fafafa;
 }
 
 #view table.col tr td .line-aria {
@@ -219,35 +220,64 @@ ul {
 
 #option {
   margin: 0 5px 10px;
-  padding: 0px 5px;
+  padding: 0px 10px;
   border: 2px solid #9cf;
-  width : 440px;
+  height: 94px;
+  display: inline-block;
+  line-height: 30px;
+}
+
+#option > div > div > div > label:not(:first-of-type) {
+  margin-left: 6px;
 }
 
 #option legend input + label {
-  padding-left : 12px;
-  cursor : pointer;
+  padding-left: 12px;
+  cursor: pointer;
 }
 
 #option legend input + label::before {
-  display : none;
+  display: none;
 }
 
 #option legend input + label::after {
-  border : solid #000;
-  border-width : 1px 1px 0 0;
-  border-radius : 0;
-  background : inherit;
-  transform : rotate(45deg);
-  left : -3px;
+  border: solid #000;
+  border-width: 1px 1px 0 0;
+  border-radius: 0;
+  background: inherit;
+  transform: rotate(45deg);
+  left: -3px;
 }
 
 #option legend input:checked + label {
-  text-decoration : underline;
+  text-decoration: underline;
+}
+
+#option .button {
+  width: 80px;
+  border: 1px solid #666;
+  text-align: center;
+  cursor: pointer;
+  background: linear-gradient(#fff, #ddd);
+  line-height: 24px;
+  display: inline-block;
+}
+
+#option .button:hover {
+  background: linear-gradient(#ddd, #fff);
 }
 
 #option .option-display {
-  display : none;
+  display: none;
+}
+
+#option .option-display-left {
+  float: left;
+}
+
+#option .option-display-right {
+  float: right;
+  margin-left: 10px;
 }
 
 

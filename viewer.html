@@ -113,11 +113,117 @@
         </div>
       </div>
       <div class="option-display">
-        <label>レーンの幅</label>
-        <label>拍の高さ</label>
-        <label>マーカーの大きさ</label>
-        <label>1列の拍数</label>
-        <label>フォントサイズ</label>
+        <div class="option-display-left">
+          <div>
+            <label>
+              レーンの幅
+              <select id="display-lane-width">
+                <option value="7">7</option>
+                <option value="9">9</option>
+                <option value="11">11</option>
+                <option value="13">13</option>
+                <option value="15">15</option>
+                <option value="17">17</option>
+                <option value="19">19</option>
+                <option value="21">21</option>
+                <option value="23">23</option>
+                <option value="25">25</option>
+                <option value="27">27</option>
+                <option value="29">29</option>
+                <option value="31">31</option>
+                <option value="33">33</option>
+                <option value="35">35</option>
+              </select>
+            </label>
+            <label>
+              拍の高さ
+              <select id="display-beat-height">
+                <option value="8">8</option>
+                <option value="12">12</option>
+                <option value="16">16</option>
+                <option value="20">20</option>
+                <option value="24">24</option>
+                <option value="28">28</option>
+                <option value="32">32</option>
+                <option value="36">36</option>
+                <option value="40">40</option>
+                <option value="44">44</option>
+                <option value="48">48</option>
+                <option value="52">52</option>
+                <option value="56">56</option>
+                <option value="60">60</option>
+              </select>
+            </label>
+            <label>
+              1列の拍数
+              <select id="display-col-beat">
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="12">12</option>
+                <option value="16">16</option>
+                <option value="20">20</option>
+                <option value="24">24</option>
+                <option value="28">28</option>
+                <option value="32">32</option>
+                <option value="40">40</option>
+                <option value="48">48</option>
+                <option value="64">64</option>
+                <option value="96">96</option>
+                <option value="128">128</option>
+                <option value="196">196</option>
+                <option value="256">256</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>
+              マーカーの大きさ
+              <select id="display-marker-size">
+                <option value="7">7</option>
+                <option value="9">9</option>
+                <option value="11">11</option>
+                <option value="13">13</option>
+                <option value="15">15</option>
+                <option value="17">17</option>
+                <option value="19">19</option>
+                <option value="21">21</option>
+                <option value="23">23</option>
+                <option value="25">25</option>
+                <option value="27">27</option>
+                <option value="29">29</option>
+                <option value="31">31</option>
+                <option value="33">33</option>
+                <option value="35">35</option>
+              </select>
+              </label>
+            <label>
+              フォントサイズ
+              <select id="display-font-size">
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="option-display-right">
+          <ul>
+            <li><span id="option-save" class="button">保存</span></li>
+            <li><span id="option-reset" class="button">リセット</span></li>
+          </ul>
+        </div>
       </div>
     </fieldset>
     <!--
