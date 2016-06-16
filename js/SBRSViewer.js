@@ -784,9 +784,9 @@ var SBRSViewer = (function() {
               markerValueDiv.className = "value";
               markerDiv.appendChild(markerValueDiv);
               markerValueDiv.innerHTML = 2 + marker.long.length;
-              //markerValueDiv.style.fontSize = (viewer.option.fontSize) + "px";
               markerValueDiv.style.webkitTransform = "scale(" + (viewer.option.fontSize / 10) + ")";
               markerValueDiv.style.transform = "scale(" + (viewer.option.fontSize / 10) + ")";
+              markerValueDiv.style.left = (-20+0.5 + (viewer.option.markerSize - 2)/2) + "px";
 
               longMakrerInfo[marker.lane - 1] = {
                 start: {
