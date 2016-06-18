@@ -682,7 +682,7 @@ var SBRSViewer = (function() {
 
     var bgInfo;
     var bgDiv;
-    var bottom;
+    var top, bottom;
     var i, iLen;
 
     for (i = 0, iLen = backgroundInfo.length; i < iLen; i++) {
@@ -707,8 +707,10 @@ var SBRSViewer = (function() {
 
       if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
         // 開始小節と終了小節が同じ
-
-        // TODO 未実装
+        top = (bgInfo.to.point * SBRSViewer.option.beatHeight * 4 / measureB);
+        bottom = (bgInfo.from.point * SBRSViewer.option.beatHeight * 4 / measureB);
+        bgDiv.style.height = (top - bottom) + "px";
+        bgDiv.style.bottom = bottom + "px";
       } else if (measure === bgInfo.from.measure) {
         // 開始小節
         bottom = (bgInfo.from.point * SBRSViewer.option.beatHeight * 4 / measureB);
