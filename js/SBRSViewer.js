@@ -136,7 +136,7 @@ var SBRSViewer = (function() {
     e.preventDefault();
 
     // 1MBまで許容
-    if(file.size > 1024 * 1024) {
+    if (file.size > 1024 * 1024) {
       throw new Error("ファイルサイズが大きすぎます");
     }
 
@@ -980,15 +980,16 @@ var SBRSViewer = (function() {
   function updateInfo() {
 
     var sbrs = SBRSViewer.sbrs;
+    var bpmMagnification = sbrs.bpmHalfMode ? 0.5 : 1;
 
     // タイトル取得
     SBRSViewer.title = SBRSViewer.sbrs.title + " ★" + SBRSViewer.sbrs.level;
 
     // BPM取得
     if (sbrs.bpmCount === 1) {
-      SBRSViewer.info.bpm = sbrs.maxBpm;
+      SBRSViewer.info.bpm = (sbrs.maxBpm * bpmMagnification);
     } else {
-      SBRSViewer.info.bpm = sbrs.minBpm + " - " + sbrs.maxBpm;
+      SBRSViewer.info.bpm = (sbrs.minBpm * bpmMagnification) + " - " + (sbrs.maxBpm * bpmMagnification);
     }
 
     // コンボ数取得

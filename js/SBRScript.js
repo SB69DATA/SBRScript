@@ -22,6 +22,7 @@ var SBRScript = (function() {
     this.bpmCount = 0; // BPMオブジェクト数
     this.measureCount = 0; // 小節オブジェクト数
     this.markerCount = 0; // マーカーオブジェクト数(ロングマーカーのホールド除く)
+    this.bpmHalfMode = false; // BPMの表記(true:半分の値を表示, false:そのままの値を表示)
     this.normalMarkerCount = 0; // 通常マーカーオブジェクトの数
     this.longMarkerCount = 0; // ロングマーカーオブジェクトの数
     this.maxBpm = 0; // BPMの最大値
@@ -172,6 +173,14 @@ var SBRScript = (function() {
 
             // 現在のBPM設定
             bpm = obj.value;
+          } else if (line.match(/^#BPMHALFMODE:/i) !== null) {
+            // BPMの表記を取得
+            value = parseInt(line.slice("#BPMHALFMODE:".length));
+            if (value === 0) {
+              sbrs.bpmHalfMode = false;
+            } else {
+              sbrs.bpmHalfMode = true;
+            }
           } else if (line.match(/^#STAGE:/i) !== null) {
             // STAGEを取得
             value = line.slice("#STAGE:".length).match(/([\d\-\.]+),([\d\-\.]+),([\d\-\.]+)/);
