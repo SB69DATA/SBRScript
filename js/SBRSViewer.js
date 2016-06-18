@@ -167,31 +167,31 @@ var SBRSViewer = (function() {
     var elements;
     var i, iLen;
 
-    // ステージタイプの変更イベントを登録
+    // ステージタイプの変更
     elements = document.getElementsByName("stage-type");
     for (i = 0, iLen = elements.length; i < iLen; i++) {
       elements[i].addEventListener("change", changeStageType);
     }
 
-    // オプションの変更イベントを登録
+    // オプションの変更
     elements = document.getElementsByName("option");
     for (i = 0, iLen = elements.length; i < iLen; i++) {
       elements[i].addEventListener("change", changeOption);
     }
 
-    // フィーバーゲージがたまりやすくなるのスキル切り替えイベントを登録
+    // フィーバーゲージがたまりやすくなるのスキル切り替え
     document.getElementById("option-skill-fever").addEventListener("change", function(e) {
       SBRSViewer.option.feverGaugeHigh = e.target.checked;
       draw();
     });
 
-    // ボスの攻撃頻度を下げるのスキル切り替えイベントを登録
+    // ボスの攻撃頻度を下げるのスキル切り替え
     document.getElementById("option-skill-bossattackfrequently").addEventListener("change", function(e) {
       SBRSViewer.option.bossAttackFrequently = e.target.checked;
       draw();
     });
 
-    // ボスの攻撃時間が短くなるのスキル切り替えイベントを登録
+    // ボスの攻撃時間が短くなるのスキル切り替え
     document.getElementById("option-skill-bossattackshort").addEventListener("change", function(e) {
       SBRSViewer.option.bossAttackShort = e.target.checked;
       draw();
