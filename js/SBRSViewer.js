@@ -1004,7 +1004,7 @@ var SBRSViewer = (function() {
     // 演奏時間取得
     SBRSViewer.info.time = Math.round(sbrs.endTime / 1000);
 
-    document.title = SBRSViewer.title + " | Sb69 Score Viewer";
+    document.title = SBRSViewer.title + " | SB69 Score Viewer";
     document.querySelector("#title .value").innerHTML = SBRSViewer.title;
     document.querySelector("#info-bpm .value").innerHTML = SBRSViewer.info.bpm;
     document.querySelector("#info-combo .value").innerHTML = SBRSViewer.info.combo;
