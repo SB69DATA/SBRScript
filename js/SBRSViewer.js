@@ -68,11 +68,12 @@ var SBRSViewer = (function() {
   window.addEventListener("DOMContentLoaded", function() {
 
     var viewElement = document.getElementById("view");
+    var sbrsPath;
 
     try {
 
       // パラメータから譜面のパス取得
-      var sbrsPath = location.search.match(/load=([^&]*)(&|$)/)[1];
+      sbrsPath = location.search.match(/load=([^&]*)(&|$)/)[1];
 
       // 譜面読み込み
       SBRSViewer.sbrs = SBRScript.load(sbrsPath, true, {
@@ -120,7 +121,45 @@ var SBRSViewer = (function() {
     }
   });
 
-  // TODO ドロップイベント追加
+  // ドラッグオーバー時の処理キャンセル
+  window.addEventListener("dragover", function(e) {
+    e.preventDefault();
+  });
+
+  // sbrsファイルのドロップによる読み込み
+  window.addEventListener("drop", function(e) {
+
+    var viewElement = document.getElementById("view");
+    var file = e.dataTransfer.files[0];
+    var fr = new FileReader();
+
+    e.preventDefault();
+
+    // 1MBまで許容
+    if(file.size > 1024 * 1024) {
+      throw new Error("ファイルサイズが大きすぎます");
+    }
+
+    fr.addEventListener("load", function(e) {
+      try {
+
+        // 譜面読み込み
+        SBRSViewer.sbrs = SBRScript.parse(e.target.result);
+
+        // 譜面描画
+        draw();
+
+      } catch (ex) {
+        viewElement.innerHTML = "譜面の描画に失敗しました";
+        console.error(ex.stack);
+
+        // エラー表示用のスタイルを適用
+        addErrorStyle();
+      }
+    });
+
+    fr.readAsText(file);
+  });
 
   /* function addEvent
    * イベントを登録します
@@ -267,9 +306,20 @@ var SBRSViewer = (function() {
     document.getElementById("option-skill-bossattackshort").checked = false;
   }
 
+  /* function addLoadStyle
+   * 描画成功用のスタイルを適用します
+   * 戻り値 : なし
+   */
+  function addLoadStyle() {
+    document.getElementById("title").style.display = "block";
+    document.getElementById("info").style.display = "block";
+    document.getElementById("option").style.display = "inline-block";
+    document.body.className = "fadein";
+  }
+
   /* function addErrorStyle
    * エラー表示用のスタイルを適用します
-   * 戻し値 : なし
+   * 戻り値 : なし
    */
   function addErrorStyle() {
     document.getElementById("title").style.display = "none";
@@ -485,8 +535,8 @@ var SBRSViewer = (function() {
     // viewに反映
     viewElement.appendChild(colTable);
 
-    // フェードイン
-    document.body.className = "fadein";
+    // 描画成功用のスタイルを適用
+    addLoadStyle();
   }
 
   /* function initMarkerHitInfo
