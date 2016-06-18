@@ -246,6 +246,17 @@ var SBRScript = (function() {
       lastTime = time;
     }
 
+    // #BPMの記載なし
+    if (bpmValueArray.length === 0) {
+      obj = new Bpm();
+      obj.value = bpm;
+      obj.measure = 1;
+      obj.point = 0;
+      obj.time = 0;
+      sbrs.bpm.push(obj);
+      bpmValueArray.push(obj.value);
+    }
+
     // ロングマーカーの中間判定情報付与
     addLongHoldData(sbrs);
 
