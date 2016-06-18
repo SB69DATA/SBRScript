@@ -327,7 +327,7 @@ var SBRScript = (function() {
         }
       } else {
         // 読み込み失敗
-        console.error("譜面の読み込みに失敗しました(url:%s)", sbrScriptUrl);
+        console.error("譜面の読み込みに失敗しました(url:%s)", decodeURI(sbrScriptUrl));
         if (callback && typeof callback.error === "function") {
           callback.error();
         }
@@ -357,7 +357,7 @@ var SBRScript = (function() {
               }
             } else {
               // 読み込み失敗
-              console.error("譜面の読み込みに失敗しました(url:%s)", sbrScriptUrl);
+              console.error("譜面の読み込みに失敗しました(url:%s)", decodeURI(sbrScriptUrl));
               if (callback && typeof callback.error === "function") {
                 callback.error();
               }
@@ -699,7 +699,7 @@ var SBRScript = (function() {
         } else {
           // ロングマーカーの終端が見つからなかった場合、通常のマーカーとして扱う
           marker.type = 1;
-          console.warn("ロングマーカーの終端情報が見つかりませんでした(" + marker.measure + "小節, " + marker.point + "拍目)");
+          console.warn("ロングマーカーの終端情報が見つかりませんでした(%s小節, %s拍目)", marker.measure, marker.point);
         }
       }
     }
