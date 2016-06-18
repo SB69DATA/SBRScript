@@ -304,6 +304,9 @@ var SBRSViewer = (function() {
     document.getElementById("option-skill-fever").checked = false;
     document.getElementById("option-skill-bossattackfrequently").checked = false;
     document.getElementById("option-skill-bossattackshort").checked = false;
+
+    // オプションの設定選択をリセット
+    document.getElementById("option-skill").checked = true;
   }
 
   /* function addLoadStyle
