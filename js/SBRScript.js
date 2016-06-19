@@ -407,11 +407,11 @@ var SBRScript = (function() {
     }
 
     if (bpmIndex === -1) {
-      // 該当小節にBPM変更あり
+      // 該当小節にBPM変更なし
 
       time = measureObj.time + (240000.0 / bpm * (measureObj.valueS / measureObj.valueB) * (point / measureObj.valueS));
     } else {
-      // 該当小節にBPM変更なし
+      // 該当小節にBPM変更あり
 
       bpmObj = sbrs.bpm[bpmIndex];
       if (bpmObj.point === point) {
@@ -476,7 +476,7 @@ var SBRScript = (function() {
     }
 
     if (bpmIndex !== -1) {
-      // 該当小節にBPM変更あり
+      // 該当小節にBPM変更なし
 
       bpmObj = sbrs.bpm[bpmIndex];
 
@@ -484,7 +484,7 @@ var SBRScript = (function() {
       pointValue = bpmObj.point + measureS * ((time - bpmObj.time) / (240000.0 / bpmObj.value * (measureS / measureB)));
 
     } else {
-      // 該当小節にBPM変更なし
+      // 該当小節にBPM変更あり
 
       // 1小節の時間
       measureTime = 240000.0 / bpm * (measureS / measureB);
