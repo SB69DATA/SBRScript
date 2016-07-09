@@ -3,7 +3,9 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="height=device-height">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SB69 Score Player</title>
   <link href="img/icon.png" rel="icon">
   <link href="css/player.css" rel="stylesheet" />
@@ -13,7 +15,15 @@
 
 <body>
   <div id="player">
-    <canvas id="main"></canvas>
+    <div>
+      <canvas id="bg"></canvas>
+    </div>
+    <div>
+      <canvas id="lane"></canvas>
+    </div>
+    <div>
+      <canvas id="main"></canvas>
+    </div>
   </div>
 </body>
 
