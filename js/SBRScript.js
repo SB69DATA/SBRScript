@@ -45,7 +45,8 @@ var SBRScript = (function() {
     this.long = null; // ロングマーカーのホールド判定をMarkerの配列で格納
     this.bpm = 0.0; // BPM
     this.scroll = 0.0; // SCROLL
-    this.pair = 0; // type2,3の場合、対になるMarkerのindexを格納
+    this.pair = 0; // type2,3の場合対になるMarkerのindexを格納
+    this.same = false; // 同時押しマーカーの有無
   }
 
   // Measureオブジェクト
@@ -263,11 +264,17 @@ var SBRScript = (function() {
       bpmValueArray.push(obj.value);
     }
 
+    // sbrsオブジェクトソート
+    sortSbrs(sbrs);
+
     // ロングマーカーの中間判定情報付与
     addLongHoldData(sbrs);
 
     // フィーバーゲージの情報付与
     addFeverGaugeData(sbrs);
+
+    // 同時押し情報付与
+    addSameMarkerData(sbrs);
 
     // 終了時間
     sbrs.endTime = time;
@@ -374,6 +381,19 @@ var SBRScript = (function() {
 
     return sbrs;
   };
+
+  /* function sortSbrs
+   * sbrsオブジェクトのデータをソートします
+   * 引数1 : sbrsオブジェクト
+   * 戻り値 : なし
+   */
+  function sortSbrs(sbrs) {
+
+    // マーカーをソート
+    sbrs.marker.sort(function(a, b) {
+      return a.time - b.time;
+    });
+  }
 
   /* function getTimeFromMeasurePoint
    * 小節と拍数を元に時間を取得します
@@ -755,6 +775,41 @@ var SBRScript = (function() {
     // Feverに必要なマーカー数
     sbrs.fever = Math.ceil(sbrs.feverGaugeLength / (4.0 * 1));
     sbrs.feverHigh = Math.ceil(sbrs.feverGaugeLength / (4.0 * 7));
+  }
+
+  /* function addSameMarkerData
+   * マーカーの同時押し情報を付与します
+   * 引数1 : sbrsオブジェクト
+   * 戻り値 : なし
+   */
+  function addSameMarkerData(sbrs) {
+
+    var marker, tmpMarker;
+    var i, iLen, j;
+
+    for (i = 0, iLen = sbrs.marker.length; i < iLen; i++) {
+
+      marker = sbrs.marker[i];
+
+      if (marker.type !== 1 || marker.same) {
+        continue;
+      }
+
+      for (j = i + 1; j < iLen; j++) {
+
+        tmpMarker = sbrs.marker[j];
+
+        if (tmpMarker.type !== 1) {
+          continue;
+        }
+
+        if (tmpMarker.time === marker.time) {
+          marker.same = true;
+          tmpMarker.same = true;
+        }
+        break;
+      }
+    }
   }
 
   /* function getComboCount
