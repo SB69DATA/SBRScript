@@ -1,7 +1,6 @@
 var SBRSPlayer = (function() {
 
   var SBRSPlayer = {};
-  var sbrs = null;
   var canvas = null;
   var ctx = null;
 
@@ -11,7 +10,6 @@ var SBRSPlayer = (function() {
 
   var JUDGE_Y = 1104; // 判定位置のY座標
   var JUDGE_CIRCLE_SIDE_X = 272; // 判定サークルの画面端からの距離
-  //var JUDGE_CIRCLE_SIZE = 172; // 判定サークルのサイズ
 
   var LANE_TOP_Y = 406; // レーンの上部のY座標
   var LANE_BOTTOM_SIDE_X = 72; // レーンの下部の画面端からの距離
@@ -22,7 +20,11 @@ var SBRSPlayer = (function() {
 
   var MAX_SE_PLAY = 10; // SEの最大同時再生数
 
-  SBRSPlayer.sbrs = null; // sbrスクリプトオブジェクト
+  var sbrs = null; // sbrスクリプトオブジェクト
+  SBRSPlayer.sbrs = null;
+
+  var state = 0; // プレイヤーの状態(0:初期化 1:読込中 2:画像読み込み完了 3:待機中 4:演奏中 5:演奏終了)
+  SBRSPlayer.state = state;
 
   var playData = {};
   SBRSPlayer.playData = playData; // プレイデータ
@@ -52,9 +54,11 @@ var SBRSPlayer = (function() {
   sound.loadCount = 0;
   sound.loadErrorFlag = false;
   sound.bgm = null;
-  sound.perfect = [];
-  sound.good = [];
+  sound.bgmInstance = null;
+  sound.perfect = null;
+  sound.good = null;
   sound.long = null;
+  sound.longInstance = null;
   load.sound = sound;
 
   // 汎用
@@ -110,16 +114,20 @@ var SBRSPlayer = (function() {
       // パラメータから譜面のパス取得
       sbrsPath = location.search.match(/load=([^&]*)(&|$)/)[1];
 
+      // ステータスを読込中に
+      state = 1;
+
       // 譜面読み込み
       SBRSPlayer.sbrs = SBRScript.load(sbrsPath, true, {
 
         // 読み込み成功
         load: function() {
 
-          sbrs = SBRSPlayer.sbrs;
-
           // BGM読み込み
           sound.bgm = loadSound(SBRSPlayer.sbrs.soundUrl);
+
+          // 読み込み完了チェック
+          checkLoadEnd();
         },
         // 読み込み失敗
         error: function() {
@@ -127,8 +135,13 @@ var SBRSPlayer = (function() {
         }
       });
 
+      sbrs = SBRSPlayer.sbrs;
+
       // イベント登録
       addEvent();
+
+      // SoundJS初期化
+      initSoundJs();
 
       // リソース読み込み
       loadResource();
@@ -152,6 +165,89 @@ var SBRSPlayer = (function() {
       e.preventDefault();
     });
 
+    // 入力イベント
+    canvas.addEventListener("touchstart", inputStart);
+    canvas.addEventListener("touchmove", inputMove);
+    canvas.addEventListener("touchend", inputEnd);
+    canvas.addEventListener("touchcancel", inputEnd);
+    window.addEventListener("keydown", inputStart);
+    window.addEventListener("keyup", inputEnd);
+    canvas.addEventListener("mousedown", inputStart);
+    canvas.addEventListener("mousemove", inputMove);
+    canvas.addEventListener("mouseup", inputEnd);
+  }
+
+
+  /* function inputStart
+   * 入力開始処理を行います
+   * 戻り値 : なし
+   */
+  function inputStart(x, y, time) {
+
+    switch (state) {
+      case 3: // 待機中
+        inputWaitStart();
+        break;
+      case 4: // 演奏中
+        break;
+      case 5: // 演奏終了
+        break;
+      case 0: // 初期化
+      case 1: // 読込中
+      case 2: // 画像読み込み完了
+        break;
+      default:
+        throw new Error("state error");
+    }
+  }
+
+  /* function inputStart
+   * 入力待機中の入力処理を行います
+   * 戻り値 : なし
+   */
+  function inputWaitStart() {
+
+    // 音声再生開始
+    
+    // ステータスを演奏中に
+    state = 4;
+  }
+
+  /* function inputMove
+   * 入力中の移動処理を行います
+   * 戻り値 : なし
+   */
+  function inputMove() {
+
+  }
+
+  /* function inputEnd
+   * 入力終了処理を行います
+   * 戻り値 : なし
+   */
+  function inputEnd() {
+
+  }
+
+  /* function initSoundJs
+   * SoundJSの初期化を行います
+   * 戻り値 : なし
+   */
+  function initSoundJs() {
+    createjs.Sound.alternateExtensions = ["wav", "mp3"];
+    createjs.Sound.on("fileload", function(e) {
+      console.log("fileload");
+      load.sound.loadCount++;
+
+      // 読み込み完了チェック
+      checkLoadEnd();
+    });
+
+    createjs.Sound.on("fileerror", function() {
+      console.log("fileerror");
+      load.sound.loadErrorFlag = true;
+      alert("fileerror");
+    });
   }
 
   /* function loadResource
@@ -183,19 +279,9 @@ var SBRSPlayer = (function() {
     img.outsideSpeaker = loadImg("img/outside-speaker.png");
 
     // 効果音読み込み
-    sound.perfect[0] = loadSound("se/perfect.ogg");
-    sound.good[0] = loadSound("se/good.ogg");
-    sound.long = loadSound("se/long.ogg");
-    sound.perfect[0].addEventListener("load", function() {
-      for (i = 1, iLen = MAX_SE_PLAY; i < iLen; i++) {
-        sound.perfect[i] = new Audio(sound.perfect[0].src);
-      }
-    });
-    sound.good[0].addEventListener("loadeddata", function() {
-      for (i = 1, iLen = MAX_SE_PLAY; i < iLen; i++) {
-        sound.good[i] = new Audio(sound.good[0].src);
-      }
-    });
+    sound.perfect = loadSound("se/perfect.wav");
+    sound.good = loadSound("se/good.wav");
+    sound.long = loadSound("se/long.wav");
   }
 
   /* function loadImg
@@ -232,29 +318,18 @@ var SBRSPlayer = (function() {
    * 戻り値 : Audioオブジェクト
    */
   function loadSound(soundPath) {
+    var id = soundPath;
+    var sound = createjs.Sound.registerSound(soundPath, soundPath);
 
-    var sound = new Audio();
-
-    sound.src = soundPath;
-    sound.load();
-
-    // 読み込み成功
-    sound.addEventListener("loadeddata", function() {
-
-      load.sound.loadCount++;
-
-      // 読み込み完了チェック
-      checkLoadEnd();
-    });
-
-    // 読み込み失敗
-    sound.addEventListener("error", function() {
+    if (sound === false) {
+      // 読み込み失敗
+      console.log("fileerror");
       load.sound.loadErrorFlag = true;
-    });
+    }
 
     load.sound.count++;
 
-    return sound;
+    return id;
   }
 
   var Sound = (function() {
@@ -271,10 +346,17 @@ var SBRSPlayer = (function() {
    * 戻り値 : なし
    */
   function checkLoadEnd() {
-    if (load.img.count === load.img.loadCount
-      /*&&
-           load.sound.count === load.sound.loadCount*/
+
+    if (load.img.count === load.img.loadCount) {
+      state = 2;
+    }
+
+    if (load.img.count === load.img.loadCount &&
+      load.sound.count === load.sound.loadCount &&
+      sbrs.readyState === 4
     ) {
+      state = 3;
+      load.endFlag = true;
       initPlay();
     }
   }
@@ -284,7 +366,6 @@ var SBRSPlayer = (function() {
    * 戻り値 : なし
    */
   function initPlay() {
-    load.endFlag = true;
 
     // レーン関連
     laneTopAllWidth = CANVAS_WIDTH - LANE_TOP_SIDE_X * 2;
@@ -310,6 +391,20 @@ var SBRSPlayer = (function() {
   function draw(time) {
 
     time = time ? time : getTime();
+
+    switch (state) {
+      case 3: // 待機中
+      case 4: // 演奏中
+        break;
+      case 5: // 演奏終了
+        break;
+      case 0: // 初期化
+      case 1: // 読込中
+      case 2: // 画像読み込み完了
+        break;
+      default:
+        throw new Error("state error");
+    }
 
     if (load.endFlag) {
       // 全リソースの読み込み完了
@@ -418,160 +513,47 @@ var SBRSPlayer = (function() {
   return SBRSPlayer;
 }());
 
-// var WebAudio = (function() {
-
-//   var audioContext = window.AudioContext || window.webkitAudioContext;
-
-//   function WebAudio() {
-//     this.src = "";
-//     this.ctx = null;
-//   }
-
-//   WebAudio.prototype.__defineSetter__("src", function(val) {
-//   });
-
-//   WebAudio.prototype.play = function() {
-
-//   };
-
-//   WebAudio.prototype.pause = function() {
-
-//   };
-
-//   WebAudio.prototype.setVolume = function() {
-
-//   };
-
-//   return WebAudio;
-// }());
-
+/*
 window.addEventListener("DOMContentLoaded", function() {
-  var WebAudio = (function() {
 
-    var AudioContext = window.AudioContext || window.webkitAudioContext;
-    var audioContext = new AudioContext();
+  sound = [];
+  function loadSound(soundPath, id) {
+    /*
+   createjs.Sound.registerSound(soundPath, id);
+   if(typeof callbackLoadSound === "function") {
+     callbackLoadSound(sound.loaded, sound.count);
+   }
+   sound.count++;aaaaa*
 
-    function WebAudio() {
-      this._src = "";
-      this.loop = false;
-      this.readyState = 0;
-      this.loadFlag = false;
-      this.bufferSrc = null;
-      this.buffer = null;
-      this.gainNode = audioContext.createGain();
-      this.event = {};
+    function loadCmp(event) {
+        alert(0)
+      var item = event.item;
+      //sound.loaded++;
+      if(item && createjs.LoadQueue.SOUND === item.type){
+        createjs.Sound.createInstance(id);
+        createjs.Sound.play(id);
+        //se[id].play(true, 0, 0, 0, 1, 0);
+        queue.removeEventListener("fileload", loadCmp);
+        queue.removeEventListener("error", loadCmp);
+      }
+      // if(sound.loaded === sound.count) {
+      //   sound.readyState = 4;
+      //   //checkState();
+      // }
+      if(typeof callbackLoadSound === "function") {
+        callbackLoadSound(sound.loaded, sound.count);
+      }
     }
+    var queue = new createjs.LoadQueue(true);
+    queue.installPlugin(createjs.Sound);
+    queue.loadManifest({src:soundPath, id:id}, true);
+    queue.addEventListener('fileload', loadCmp);
+    queue.addEventListener('error', loadCmp);
+    if(typeof callbackLoadSound === "function") {
+      //callbackLoadSound(sound.loaded, sound.count);
+    }
+  }
+  loadSound("sbrs/恋詠桜.mp3", "sbrs/恋詠桜.mp3");
 
-    WebAudio.prototype.__defineGetter__("src", function() {
-      return this._src;
-    });
-
-    WebAudio.prototype.__defineSetter__("src", function(val) {
-      if (!val) {
-        this._src = val;
-      }
-      this._src = val;
-
-      var xhr = new XMLHttpRequest();
-      var self = this;
-
-      xhr.open("get", this.src, true);
-      xhr.responseType = "arraybuffer";
-
-      xhr.addEventListener("readystatechange", function() {
-        switch (xhr.readyState) {
-          case 4:
-            if (xhr.status === 200) {
-              audioContext.decodeAudioData(xhr.response, function(buffer) {
-                self.buffer = buffer;
-                self.loadFlag = true;
-                if (typeof self.event.load === "function") {
-                  self.event.load();
-                }
-              });
-            } else {
-
-              if (typeof self.event.error === "function") {
-                self.event.error();
-              }
-
-              throw new Error("読み込みに失敗しました(" + self.src + ")");
-            }
-            break;
-          default:
-            self.readyState = xhr.readyState;
-            break;
-        }
-      });
-
-      xhr.send();
-    });
-
-    WebAudio.prototype.play = function(when, offset) {
-
-      if (!this.loadFlag) {
-        return;
-      }
-
-      when = when ? when : 0;
-      offset = offset ? offset : 0;
-      when = when / 1000.0;
-      offset = offset / 1000.0;
-
-      this.bufferSrc = audioContext.createBufferSource();
-      this.bufferSrc.buffer = this.buffer;
-      this.bufferSrc.connect(this.gainNode);
-      this.bufferSrc.loop = this.loop;
-      this.gainNode.connect(audioContext.destination);
-      if (!this.bufferSrc.loop) {
-        this.bufferSrc.start(when, offset);
-        //this.bufferSrc.start(when + audioContext.currentTime, offset);
-      } else {
-        this.bufferSrc.start(when);
-        //this.bufferSrc.start(when + audioContext.currentTime);
-      }
-    };
-
-    WebAudio.prototype.pause = function(when) {
-
-      if (!this.loadFlag) {
-        return;
-      }
-
-      when = when ? when : 0;
-
-      this.bufferSrc.stop(when + audioContext.currentTime);
-    };
-
-    WebAudio.prototype.setVolume = function(volume) {
-
-      if (!this.loadFlag) {
-        return;
-      }
-
-      volume = volume >= 0 ? volume : 0;
-      volume = volume <= 2 ? volume : 2;
-
-      this.gainNode.gain.value = Math.pow(100, volume) / 100;
-
-    };
-
-    WebAudio.prototype.addEventListener = function(event, callback) {
-      this.event[event] = callback;
-    };
-
-    return WebAudio;
-  })();
-  b = new WebAudio();
-  b.src = "sbrs/CalamityFortuned.ogg";
-  b.addEventListener("load", function() {
-    alert("load")
-  });
-  b.addEventListener("error", function() {
-    alert("error")
-
-  });
-
-  c = new WebAudio();
-  c.src = "se/long.wav";
 });
+*/
