@@ -1,4 +1,4 @@
-// ver 1.0.0
+// ver 1.1.1
 var SBRScript = (function() {
 
   var SBRScript = {};
@@ -791,7 +791,7 @@ var SBRScript = (function() {
 
       marker = sbrs.marker[i];
 
-      if (marker.type !== 1 || marker.same) {
+      if (marker.type !== 1) {
         continue;
       }
 
