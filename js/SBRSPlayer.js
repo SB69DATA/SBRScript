@@ -12,13 +12,17 @@ var SBRSPlayer = (function() {
   var JUDGE_CIRCLE_SIDE_X = 272; // 判定サークルの画面端からの距離
 
   var LANE_TOP_Y = 406; // レーンの上部のY座標
+  var LANE_H = CANVAS_HEIGHT - LANE_TOP_Y; // レーンの高さ
   var LANE_BOTTOM_SIDE_X = 72; // レーンの下部の画面端からの距離
   var LANE_TOP_SIDE_X = 478; // レーンの上部の画面端からの距離
+  var LANE_DIFF_SIDE_X = LANE_BOTTOM_SIDE_X - LANE_TOP_SIDE_X; // レーン上部と下部の画面端からの距離の差
   var LANE_WIDTH_RATIO = 2.4; // レーンの間の間隔に対するレーン幅の比率
 
   var SPEAKER_Y = 386; // スピーカーのY座標
 
   var MAX_SE_PLAY = 10; // SEの最大同時再生数
+
+  var PLAY_MIN_WAIT_TIME = -2000; // 演奏開始前の最小待機時間
 
   var sbrs = null; // sbrスクリプトオブジェクト
   SBRSPlayer.sbrs = null;
@@ -54,15 +58,17 @@ var SBRSPlayer = (function() {
   sound.loadCount = 0;
   sound.loadErrorFlag = false;
   sound.bgm = null;
-  sound.bgmInstance = null;
   sound.perfect = null;
   sound.good = null;
   sound.long = null;
-  sound.longInstance = null;
   load.sound = sound;
 
   // 汎用
-  var i, iLen;
+  var marker;
+  var time, diffTime;
+  var x, y, w, h;
+  var size;
+  var sideX, intervalWidth, ratio;
 
   // レーン関連
   var laneCount;
@@ -74,6 +80,8 @@ var SBRSPlayer = (function() {
   var laneBottomWidth;
   var laneBottomBlankWidth;
   var laneBottomIntervalWidth;
+  var laneDiffWidth;
+  var laneDiffIntervalWidth;
 
   // 判定サークル関連
   var judgeCircleSize;
@@ -177,24 +185,27 @@ var SBRSPlayer = (function() {
     canvas.addEventListener("mouseup", inputEnd);
   }
 
-
   /* function inputStart
    * 入力開始処理を行います
    * 戻り値 : なし
    */
-  function inputStart(x, y, time) {
+  function inputStart() {
+
+    var pageTime = getTime();
 
     switch (state) {
       case 3: // 待機中
-        inputWaitStart();
+        inputWaitStart(pageTime);
         break;
       case 4: // 演奏中
+        inputPlayStart();
         break;
       case 5: // 演奏終了
         break;
       case 0: // 初期化
       case 1: // 読込中
       case 2: // 画像読み込み完了
+        SBRSPlayer.load.sound.perfect.play(true, 0, 0, 0, 1);
         break;
       default:
         throw new Error("state error");
@@ -205,12 +216,29 @@ var SBRSPlayer = (function() {
    * 入力待機中の入力処理を行います
    * 戻り値 : なし
    */
-  function inputWaitStart() {
+  function inputWaitStart(pageTime) {
 
     // 音声再生開始
-    
+    if (sbrs.offset < PLAY_MIN_WAIT_TIME) {
+      SBRSPlayer.load.sound.bgm.play("none", 0, 0, 0, 1);
+    } else {
+      SBRSPlayer.load.sound.bgm.play("none", sbrs.offset - PLAY_MIN_WAIT_TIME, 0, 0, 1);
+    }
+
     // ステータスを演奏中に
     state = 4;
+
+    // 演奏開始時間を設定
+    playData.startTime = sbrs.offset < PLAY_MIN_WAIT_TIME ? pageTime - sbrs.offset : pageTime - PLAY_MIN_WAIT_TIME;
+  }
+
+  /* function inputStart
+   * 演奏中の入力処理を行います
+   * 戻り値 : なし
+   */
+  function inputPlayStart() {
+    SBRSPlayer.load.sound.perfect.play("early", 0, 0, 0, 1);
+
   }
 
   /* function inputMove
@@ -318,8 +346,9 @@ var SBRSPlayer = (function() {
    * 戻り値 : Audioオブジェクト
    */
   function loadSound(soundPath) {
-    var id = soundPath;
+
     var sound = createjs.Sound.registerSound(soundPath, soundPath);
+    var instance = createjs.Sound.createInstance(soundPath);
 
     if (sound === false) {
       // 読み込み失敗
@@ -329,7 +358,7 @@ var SBRSPlayer = (function() {
 
     load.sound.count++;
 
-    return id;
+    return instance;
   }
 
   var Sound = (function() {
@@ -377,56 +406,63 @@ var SBRSPlayer = (function() {
     laneBottomWidth = laneBottomAllWidth / (LANE_WIDTH_RATIO * laneCount + laneCount - 1) * LANE_WIDTH_RATIO;
     laneBottomBlankWidth = laneBottomAllWidth / (LANE_WIDTH_RATIO * laneCount + laneCount - 1);
     laneBottomIntervalWidth = laneBottomWidth + laneBottomBlankWidth;
+    laneDiffWidth = laneBottomWidth - laneTopWidth;
+    laneDiffIntervalWidth = laneBottomIntervalWidth - laneTopIntervalWidth;
 
     // 判定サークル関連
-    judgeCircleSize = laneTopWidth + (laneBottomWidth - laneTopWidth) * ((JUDGE_Y - LANE_TOP_Y) / (CANVAS_HEIGHT - LANE_TOP_Y));
-    judgeCircleSideX = LANE_TOP_SIDE_X - (LANE_TOP_SIDE_X - LANE_BOTTOM_SIDE_X) * ((JUDGE_Y - LANE_TOP_Y) / (CANVAS_HEIGHT - LANE_TOP_Y)) + judgeCircleSize / 2;
-    judgeCircleIntervalWidth = (laneTopIntervalWidth + (laneBottomIntervalWidth - laneTopIntervalWidth) * ((JUDGE_Y - LANE_TOP_Y) / (CANVAS_HEIGHT - LANE_TOP_Y)));
+    judgeCircleSize = laneTopWidth + (laneBottomWidth - laneTopWidth) * ((JUDGE_Y - LANE_TOP_Y) / LANE_H);
+    judgeCircleSideX = LANE_TOP_SIDE_X - (LANE_TOP_SIDE_X - LANE_BOTTOM_SIDE_X) * ((JUDGE_Y - LANE_TOP_Y) / LANE_H) + judgeCircleSize / 2;
+    judgeCircleIntervalWidth = (laneTopIntervalWidth + (laneBottomIntervalWidth - laneTopIntervalWidth) * ((JUDGE_Y - LANE_TOP_Y) / LANE_H));
   }
 
   /* function draw
    * 解析した譜面データを元に、画面の描画を行います
    * 戻り値 : なし
    */
-  function draw(time) {
+  function draw(pageTime) {
 
-    time = time ? time : getTime();
+    pageTime = pageTime ? pageTime : getTime();
+
+    if (state === 4) {
+      time = pageTime - playData.startTime;
+    } else {
+      time = sbrs.offset < PLAY_MIN_WAIT_TIME ? sbrs.offset : PLAY_MIN_WAIT_TIME;
+    }
 
     switch (state) {
       case 3: // 待機中
+
       case 4: // 演奏中
+
+        // 背景を描画
+        drawBg();
+
+        // レーンを描画
+        drawLane();
+
+        // マーカーを描画
+        drawMarker(time);
+
+        // スピーカーを描画
+        drawSpeaker();
+
+        // 判定サークルを描画
+        drawJudgeCircle();
+
+        // ctx.fillStyle = "#fff";
+        // ctx.font = "30px 'ＭＳ Ｐゴシック'";
+        // ctx.fillText(time, 0, 30);
+
         break;
       case 5: // 演奏終了
         break;
       case 0: // 初期化
       case 1: // 読込中
       case 2: // 画像読み込み完了
+        drawLoading();
         break;
       default:
         throw new Error("state error");
-    }
-
-    if (load.endFlag) {
-      // 全リソースの読み込み完了
-
-      // 背景を描画
-      drawBg();
-
-      // レーンを描画
-      drawLane();
-
-      // マーカーを描画
-      drawMarker();
-
-      // スピーカーを描画
-      drawSpeaker();
-
-      // 判定サークルを描画
-      drawJudgeCircle();
-
-    } else {
-      // リソース読込中
-      drawLoading();
     }
 
     requestAnimationFrame(draw);
@@ -453,7 +489,7 @@ var SBRSPlayer = (function() {
       ctx.lineTo(LANE_TOP_SIDE_X + laneTopIntervalWidth * i + laneTopWidth, LANE_TOP_Y);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(img.lane, 0, LANE_TOP_Y, CANVAS_WIDTH, CANVAS_HEIGHT - LANE_TOP_Y);
+      ctx.drawImage(img.lane, 0, LANE_TOP_Y, CANVAS_WIDTH, LANE_H);
       ctx.restore();
     }
   }
@@ -462,8 +498,71 @@ var SBRSPlayer = (function() {
    * マーカーを描画します
    * 戻り値 : なし
    */
-  function drawMarker() {
-    ctx.drawImageCenter(img.normalMarker, CANVAS_WIDTH / 2, 800, 34, 34);
+  function drawMarker(time) {
+
+    var i, iLen;
+
+    for (i = 0, iLen = sbrs.markerCount; i < iLen; i++) {
+
+      marker = sbrs.marker[i];
+
+      diffTime = marker.time - time;
+
+      marker.scroll = 0.2;
+
+      var speed = diffTime * marker.bpm * marker.scroll / 120;
+      if(diffTime * marker.bpm * marker.scroll > 1200 * 120) {
+        continue;
+      }
+      y = JUDGE_Y - speed + (speed * speed) / 2900;
+
+      //y = JUDGE_Y - diffTime * marker.bpm * marker.scroll / 50 + Math.pow(diffTime * marker.bpm * marker.scroll, 2) * 0.0000001;
+      //y = JUDGE_Y - diffTime * marker.bpm * marker.scroll / 300 + diffTime * diffTime * 0.0006;
+      //y = diffTime * marker.bpm * marker.scroll / 400 - Math.pow(diffTime * marker.bpm * marker.scroll, 2.0) / 400000000 + JUDGE_Y;
+
+      // judgeCircleSize = laneTopWidth + (laneBottomWidth - laneTopWidth) * ((JUDGE_Y - LANE_TOP_Y) / (CANVAS_HEIGHT - LANE_TOP_Y));
+      // judgeCircleSideX = LANE_TOP_SIDE_X - (LANE_TOP_SIDE_X - LANE_BOTTOM_SIDE_X) * ((JUDGE_Y - LANE_TOP_Y) / (CANVAS_HEIGHT - LANE_TOP_Y)) + judgeCircleSize / 2;
+      // judgeCircleIntervalWidth = (laneTopIntervalWidth + (laneBottomIntervalWidth - laneTopIntervalWidth) * ((JUDGE_Y - LANE_TOP_Y) / (CANVAS_HEIGHT - LANE_TOP_Y)));
+      // if(i === 50) {
+      //   console.log(y)
+      // }
+
+      if (y > CANVAS_HEIGHT + 150) {
+        //continue;
+      }
+      if (y < LANE_TOP_Y) {
+        //break;
+      }
+      //laneDiffWidth = laneBottomWidth - laneTopWidth;
+      //laneDiffIntervalWidth = laneBottomIntervalWidth - laneTopIntervalWidth;
+
+      //judgeCircleIntervalWidth = 
+      //(laneTopIntervalWidth + (laneBottomIntervalWidth - laneTopIntervalWidth) * ((JUDGE_Y - LANE_TOP_Y) / LANE_H));
+
+      ratio = (y - LANE_TOP_Y) / LANE_H;
+      size = laneTopWidth + laneDiffWidth * ratio;
+    //var markerSize = laneTopWidth + (laneBottomWidth - laneTopWidth) * ((JUDGE_Y - LANE_TOP_Y) / LANE_H);
+      //y += size*size;
+      x = LANE_TOP_SIDE_X + LANE_DIFF_SIDE_X * ratio + (laneDiffIntervalWidth) * ratio * (marker.lane - 1) + size / 2 + laneTopIntervalWidth * (marker.lane - 1);
+
+      switch (marker.type) {
+        case 1:
+          if (marker.same) {
+            ctx.drawImageCenter(img.sameMarker, x, y, size, size);
+          } else {
+            ctx.drawImageCenter(img.normalMarker, x, y, size, size);
+          }
+          break;
+        case 2:
+          ctx.drawImageCenter(img.longMarker, x, y, size, size);
+          break;
+        case 3:
+          ctx.drawImageCenter(img.longMarker, x, y, size, size);
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   /* function drawSpeaker
