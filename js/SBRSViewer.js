@@ -55,6 +55,16 @@ var SBRSViewer = (function() {
     this.longMarkerFastTap = option.longMarkerFastTap;
   }
 
+  // コンボ情報オブジェクト
+  function ComboInfo() {
+    this.type = 0; // マーカーの種類
+    this.time = 0.0; // 時間(ms)
+    this.measure = 0; // 小節
+    this.point = 0; // 拍
+    this.judge = 0; // 判定(未使用)
+    this.skill = 0; // スキル(0:なし 1:スコアブースト)
+  }
+
   // 対応チェック
   if (!window.addEventListener) {
     window.onload = function() {
@@ -564,6 +574,7 @@ var SBRSViewer = (function() {
     var sbrs = SBRSViewer.sbrs;
     var markerObj;
     var longMarkerObj;
+    var comboInfoObj;
     var i, iLen, j, jLen;
     var measure;
 
@@ -572,13 +583,13 @@ var SBRSViewer = (function() {
       markerObj = sbrs.marker[i];
       measure = markerObj.measure;
 
-      markerHitInfo.push({
-        type: markerObj.type,
-        time: markerObj.time,
-        measure: measure,
-        point: markerObj.point,
-        judge: 0
-      });
+      comboInfoObj = new ComboInfo();
+      comboInfoObj.type = markerObj.type;
+      comboInfoObj.time = markerObj.time;
+      comboInfoObj.measure = measure;
+      comboInfoObj.point = markerObj.point;
+      comboInfoObj.judge = 0;
+      markerHitInfo.push(comboInfoObj);
 
       if (markerObj.long) {
         for (j = 0, jLen = markerObj.long.length; j < jLen; j++) {
@@ -586,13 +597,13 @@ var SBRSViewer = (function() {
           longMarkerObj = sbrs.marker[i].long[j];
           measure = longMarkerObj.measure;
 
-          markerHitInfo.push({
-            type: longMarkerObj.type,
-            time: longMarkerObj.time,
-            measure: measure,
-            point: longMarkerObj.point,
-            judge: 0
-          });
+          comboInfoObj = new ComboInfo();
+          comboInfoObj.type = longMarkerObj.type;
+          comboInfoObj.time = longMarkerObj.time;
+          comboInfoObj.measure = measure;
+          comboInfoObj.point = longMarkerObj.point;
+          comboInfoObj.judge = 0;
+          markerHitInfo.push(comboInfoObj);
         }
       }
     }
