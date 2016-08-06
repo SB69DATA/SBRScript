@@ -731,11 +731,11 @@ var SBRScript = (function() {
                   ((60000 / bpmTmp) % 50 === 0 && point % 2 === 0) ||
                   ((60000 / bpmTmp) % 100 === 0 && point % 1 === 0)
                 ) {
-                  // ロングマーカー終端かつbpmが特定の値以外
+                  // ロングマーカー終端かつbpmが特定の値かつ終端が特定の位置
                   marker.longEndCountFlag = true;
                   endMarker.longEndCountFlag = true;
                 } else {
-                  // ロングマーカー終端かつbpmが特定の値以外
+                  // ロングマーカー終端かつ条件に非該当
                   break;
                 }
               }
