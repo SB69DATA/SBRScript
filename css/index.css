@@ -30,6 +30,17 @@ h1 {
 	margin : 0.5em;
 }
 
+@font-face {
+  font-family:"アンニャントロマン";
+  src:
+  url("./font/toroman.woff") format("woff"),
+  url("./font/toroman.ttf") format("truetype");
+}
+
+h1 span {
+	font-family : "アンニャントロマン";
+}
+
 h1 span {
  display:inline-block;
  position:relative;
