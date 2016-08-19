@@ -372,6 +372,7 @@ var SBRSViewer = (function() {
 
     viewer.option.scoreboostCount = DEFAULT_SCORE_BOOST_COUNT;
     viewer.option.scrollSpeed = DEFAULT_SCROLL_SPEED;
+    viewer.option.startOffset = DEFAULT_START_OFFSET;
 
     if (viewer.option.scoreboost) {
       document.getElementById('scoreboost-count-item').style.display = 'inline';
@@ -459,16 +460,14 @@ var SBRSViewer = (function() {
     }
 
     // スコアアタック選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeScoreElements = document.getElementsByClassName('type-score');
-    for (i = 0, iLen = typeScoreElements.length; i < iLen; i++) {
-      typeScoreElements[i].style.display = typeScoreStyle;
-    }
+    Array.prototype.forEach.call(document.getElementsByClassName('type-score'), function(element) {
+      element.style.display = typeScoreStyle;
+    });
 
     // BOSSバトル選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeBossElements = document.getElementsByClassName('type-boss');
-    for (i = 0, iLen = typeBossElements.length; i < iLen; i++) {
-      typeBossElements[i].style.display = typeBossStyle;
-    }
+    Array.prototype.forEach.call(document.getElementsByClassName('type-boss'), function(element) {
+      element.style.display = typeBossStyle;
+    });
   }
 
   /**
@@ -499,16 +498,14 @@ var SBRSViewer = (function() {
     }
 
     // スキル設定選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeSkillElements = document.getElementsByClassName('option-skill');
-    for (i = 0, iLen = typeSkillElements.length; i < iLen; i++) {
-      typeSkillElements[i].style.display = typeSkillStyle;
-    }
+    Array.prototype.forEach.call(document.getElementsByClassName('option-skill'), function(element) {
+      element.style.display = typeSkillStyle;
+    });
 
     // 表示設定選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeDisplayElements = document.getElementsByClassName('option-display');
-    for (i = 0, iLen = typeDisplayElements.length; i < iLen; i++) {
-      typeDisplayElements[i].style.display = typeDisplayStyle;
-    }
+    Array.prototype.forEach.call(document.getElementsByClassName('option-display'), function(element) {
+      element.style.display = typeDisplayStyle;
+    });
   }
 
   /**
@@ -726,9 +723,9 @@ var SBRSViewer = (function() {
     for (i = SCORE_BOOST_COMBO_INTERVAL, iLen = comboInfo.length; i < iLen; i += SCORE_BOOST_COMBO_INTERVAL) {
 
       // BPM120時,1650msが基準
-      skillInvokeTime = comboInfo[i].time + 1650 * (120.0 / (comboInfo[i].bpm * comboInfo[i].scroll * option.scrollSpeed));
+      skillInvokeTime = comboInfo[i].time + 1650 * (120.0 / (comboInfo[i].bpm * comboInfo[i].scroll * viewer.option.scrollSpeed));
 
-      for (addCount = 0, j = i + 1, jLen = iLen; j < jLen && addCount < option.scoreboostCount; j++) {
+      for (addCount = 0, j = i + 1, jLen = iLen; j < jLen && addCount < viewer.option.scoreboostCount; j++) {
 
         // スキル発動時間経過後の通常マーカーにスキル「スコアブースト」の発動情報を付与
         if (comboInfo[j].time >= skillInvokeTime && comboInfo[j].type === 1 && comboInfo[i].skill === 0) {
@@ -977,7 +974,7 @@ var SBRSViewer = (function() {
         switch (marker.type) {
           case 1:
             // 通常マーカー
-            if (comboInfo[comboInfoIndex].skill === 1 && option.scoreboost) {
+            if (comboInfo[comboInfoIndex].skill === 1 && viewer.option.scoreboost) {
               markerDiv.className = 'normal-marker skill-scoreboost';
             } else {
               markerDiv.className = 'normal-marker';
