@@ -98,8 +98,8 @@ var SBRScript = (function() {
 
   /**
    * SBRスクリプト形式の譜面データの文字列を解析、解析結果を格納したオブジェクトを返します
-   * @param {string} - sbrScriptStr 譜面データを格納した文字列
-   * @param {Sbrs} - [sbrs] SBRスクリプトオブジェクト
+   * @param {string} sbrScriptStr 譜面データを格納した文字列
+   * @param {Sbrs} [sbrs] SBRスクリプトオブジェクト
    * @return {Sbrs} SBRスクリプトオブジェクト
    */
   SBRScript.prototype.parse = function(sbrScriptStr, sbrs) {
@@ -321,9 +321,9 @@ var SBRScript = (function() {
 
   /**
    * 指定されたURLからSBRスクリプト形式の譜面を読み込み、解析結果を格納したオブジェクトを返します
-   * @param {string} sbrScriptUrl - SBRスクリプトファイルのURL
-   * @param {boolean} async - 非同期読み込みフラグ(true:非同期読み込み false:同期読み込み)
-   * @param {Object} callback - 読み込みが完了した時に呼び出すコールバック関数
+   * @param {string} sbrScriptUrl SBRスクリプトファイルのURL
+   * @param {boolean} async 非同期読み込みフラグ(true:非同期読み込み false:同期読み込み)
+   * @param {Object} callback 読み込みが完了した時に呼び出すコールバック関数
    *                 callback.load  : 読み込み成功時に実行する関数
    *                 callback.error : 読み込み失敗時に実行する関数
    * @return {Sbrs} SBRスクリプトオブジェクト
@@ -403,9 +403,9 @@ var SBRScript = (function() {
 
   /**
    * 小節と拍数を元に時間を取得します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
-   * @param {number} measure - 時間を確認したい小節
-   * @param {number} point - 時間を確認したい拍数
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
+   * @param {number} measure 時間を確認したい小節
+   * @param {number} point 時間を確認したい拍数
    * @return {number} 時間(ms)
    */
   SBRScript.prototype.getTimeFromMeasurePoint = function(sbrs, measure, point) {
@@ -455,8 +455,8 @@ var SBRScript = (function() {
 
   /**
    * 時間から小節と拍数を取得します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
-   * @param {number} time - 時間(ms)
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
+   * @param {number} time 時間(ms)
    * @return {Object} 小節と拍数を格納したオブジェクト({measure:value, point:value})
    */
   SBRScript.prototype.getMeasurePointFromTime = function(sbrs, time) {
@@ -533,8 +533,8 @@ var SBRScript = (function() {
 
   /**
    * 時間を元にBPMを取得します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
-   * @param {number} time - 時間(ms)
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
+   * @param {number} time 時間(ms)
    * @return {number} BPM
    */
   SBRScript.prototype.getBpmFromTime = function(sbrs, time) {
@@ -551,7 +551,7 @@ var SBRScript = (function() {
 
   /**
    * 譜面のレーン数を取得します
-   * @param {string[]} sbrScriptArray - SBRスクリプト形式の譜面を格納した配列
+   * @param {string[]} sbrScriptArray SBRスクリプト形式の譜面を格納した配列
    * @return {number} 譜面のレーン数(デフォルト:3)
    */
   function getLaneCount(sbrScriptArray) {
@@ -572,8 +572,8 @@ var SBRScript = (function() {
 
   /**
    * 配列に格納した譜面を正規化。コメントや異常な記述を除去します
-   * @param {string[]} - sbrScriptArray SBRスクリプト形式の譜面を格納した配列
-   * @param {number} - laneCount レーン数
+   * @param {string[]} sbrScriptArray SBRスクリプト形式の譜面を格納した配列
+   * @param {number} laneCount レーン数
    * @return {string[]} 正規化したSBRスクリプト形式の譜面を格納した配列
    */
   function scriptStrNormalization(sbrScriptArray, laneCount) {
@@ -664,8 +664,8 @@ var SBRScript = (function() {
 
   /**
    * インデックスで指定した小節のマーカー行の行数を取得します
-   * @param {string[]} sbrScriptArray - SBRスクリプト形式の譜面を格納した配列
-   * @param {number} index - 行数を確認したい小節の先頭行のindex
+   * @param {string[]} sbrScriptArray SBRスクリプト形式の譜面を格納した配列
+   * @param {number} index 行数を確認したい小節の先頭行のindex
    * @return {number} indexで指定した小節のマーカー行の行数
    */
   function getMeasureLineCount(sbrScriptArray, index) {
@@ -690,7 +690,7 @@ var SBRScript = (function() {
    * sbrs.markerにロングマーカーのホールド情報を付与します
    * 4/4拍子の場合、1小節フルのロングマーカーだと4コンボ付与
    * 7/8拍子の場合、1小節フルのロングマーカーだと7コンボ付与
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
    */
   function addLongHoldData(sbrs) {
 
@@ -784,9 +784,9 @@ var SBRScript = (function() {
 
   /**
    * ロングの終端のindexを取得します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
-   * @param {number} index - ロングマーカーのindex
-   * @param {number} lane - ロングマーカーのレーン
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
+   * @param {number} index ロングマーカーのindex
+   * @param {number} lane ロングマーカーのレーン
    * @return {number} ロングマーカー終端のindex(見つからない場合は-1を返す)
    */
   function getLongEndIndex(sbrs, index, lane) {
@@ -812,7 +812,7 @@ var SBRScript = (function() {
 
   /**
    * フィーバーゲージの長さを付与します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
    */
   function addFeverGaugeData(sbrs) {
 
@@ -834,7 +834,7 @@ var SBRScript = (function() {
 
   /**
    * コンボ数の理論値を取得します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
    * @return {number} コンボ数の理論値
    */
   function getComboCount(sbrs) {
@@ -860,7 +860,7 @@ var SBRScript = (function() {
 
   /**
    * マーカーオブジェクトの数を付与します
-   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {Sbrs} sbrs SBRスクリプトオブジェクト
    */
   function addMarkerCount(sbrs) {
 

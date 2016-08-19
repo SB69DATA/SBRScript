@@ -104,7 +104,7 @@ var SBRSViewer = (function() {
   /**
    * ローカルストレージに格納する情報を保持します
    * @constructor
-   * @param {Object} option - 表示オプション
+   * @param {Object} option 表示オプション
    */
   function ScoreViewerOptionStorage(option) {
     this.beatHeight = option.beatHeight;
@@ -645,8 +645,8 @@ var SBRSViewer = (function() {
 
   /**
    * コンボ毎の情報を格納する配列、およびマーカー情報とコンボ情報の関連付けを行う配列を初期化します
-   * @param {ComboInfo[]} comboInfo - コンボ毎の情報を格納する配列
-   * @param {MarkerComboRelation[]} markerComboRelation - コンボ情報の関連付けを格納する配列
+   * @param {ComboInfo[]} comboInfo コンボ毎の情報を格納する配列
+   * @param {MarkerComboRelation[]} markerComboRelation コンボ情報の関連付けを格納する配列
    */
   function initcomboInfo(comboInfo, markerComboRelation) {
 
@@ -749,8 +749,8 @@ var SBRSViewer = (function() {
 
   /**
    * フィーバーゲージ、ボス攻撃時間の情報をセットします
-   * @param {Object[]} backgroundInfo - フィーバーゲージ、ボス攻撃時間の情報を格納する配列
-   * @param {ComboInfo[]} comboInfo - コンボ毎の情報を格納する配列
+   * @param {Object[]} backgroundInfo フィーバーゲージ、ボス攻撃時間の情報を格納する配列
+   * @param {ComboInfo[]} comboInfo コンボ毎の情報を格納する配列
    */
   function setBackgroundInfo(backgroundInfo, comboInfo) {
 
@@ -879,11 +879,11 @@ var SBRSViewer = (function() {
 
   /**
    * ラインエリアのdiv要素にフィーバー中、ボス攻撃中のバックグラウンドを追加します
-   * @param {Object} lineAriaDiv - ラインdiv要素
-   * @param {number} measure - 現在の小節
-   * @param {number} measureB - 現在の小節の分母
-   * @param {Object[]} backgroundInfo - フィーバーゲージ、ボス攻撃時間の情報を格納する配列
-   * @param {number} measureHeight - 描画エリアの高さ
+   * @param {Object} lineAriaDiv ラインdiv要素
+   * @param {number} measure 現在の小節
+   * @param {number} measureB 現在の小節の分母
+   * @param {Object[]} backgroundInfo フィーバーゲージ、ボス攻撃時間の情報を格納する配列
+   * @param {number} measureHeight 描画エリアの高さ
    */
   function drawBackground(lineAriaDiv, measure, measureB, backgroundInfo, measureHeight) {
 
@@ -941,13 +941,13 @@ var SBRSViewer = (function() {
 
   /**
    * マーカーエリアのdiv要素にマーカーを追加します
-   * @param {Object} markerAriaDiv - マーカーdiv要素
-   * @param {number} markerIndex - 描画済みマーカーのindex
-   * @param {number} measure - 現在の小節
-   * @param {number} measureHeight - 描画エリアの高さ
-   * @param {Object[]} longMakrerInfo - ロングマーカーの描画情報
-   * @param {ComboInfo[]} comboInfo - コンボ毎の情報を格納する配列
-   * @param {MarkerComboRelation[]} markerComboRelation - コンボ情報の関連付けを格納する配列
+   * @param {Object} markerAriaDiv マーカーdiv要素
+   * @param {number} markerIndex 描画済みマーカーのindex
+   * @param {number} measure 現在の小節
+   * @param {number} measureHeight 描画エリアの高さ
+   * @param {Object[]} longMakrerInfo ロングマーカーの描画情報
+   * @param {ComboInfo[]} comboInfo コンボ毎の情報を格納する配列
+   * @param {MarkerComboRelation[]} markerComboRelation コンボ情報の関連付けを格納する配列
    * @return {number} 次に処理するマーカーのインデックス
    */
   function drawMarker(markerAriaDiv, markerIndex, measure, measureHeight, longMakrerInfo, comboInfo, markerComboRelation) {
@@ -1046,11 +1046,11 @@ var SBRSViewer = (function() {
 
   /**
    * マーカーエリアのdiv要素にロングマーカーの中間線を追加します
-   * @param {Object} markerAriaDiv - マーカーdiv要素
-   * @param {number} measure - 現在の小節
-   * @param {number} measureHeight - 描画エリアの高さ
-   * @param {Object[]} longMakrerInfo - ロングマーカーの描画情報
-   * @param {number} colDrawBeat - 1列の描画済み拍数
+   * @param {Object} markerAriaDiv マーカーdiv要素
+   * @param {number} measure 現在の小節
+   * @param {number} measureHeight 描画エリアの高さ
+   * @param {Object[]} longMakrerInfo ロングマーカーの描画情報
+   * @param {number} colDrawBeat 1列の描画済み拍数
    */
   function drawLongLine(markerAriaDiv, measure, measureHeight, longMarkerInfo, colDrawBeat) {
 
@@ -1108,11 +1108,11 @@ var SBRSViewer = (function() {
 
   /**
    * ラインエリアのdiv要素に拍子線、レーンの区切り線を追加します
-   * @param {Object} lineAriaDiv - ラインdiv要素
-   * @param {number} measureS - 拍子の分子
-   * @param {number} measureB - 拍子の分母
-   * @param {number} laneCount - レーン数
-   * @param {number} divHeight - 描画エリアの高さ
+   * @param {Object} lineAriaDiv ラインdiv要素
+   * @param {number} measureS 拍子の分子
+   * @param {number} measureB 拍子の分母
+   * @param {number} laneCount レーン数
+   * @param {number} divHeight 描画エリアの高さ
    */
   function drawLine(lineAriaDiv, measureS, measureB, laneCount, divHeight) {
 
