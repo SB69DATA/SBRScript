@@ -1,7 +1,9 @@
 // ver 1.2.0
 var SBRScript = (function() {
 
-  var SBRScript = {};
+  var script = new SBRScript();
+
+  function SBRScript() {}
 
   var DEFAULT_BPM = 120.0;
   var DEFAULT_MEASURE_S = 4;
@@ -84,7 +86,7 @@ var SBRScript = (function() {
    * [引数2] : Sbrsオブジェクト
    * 戻り値 : 譜面データの解析結果を格納したオブジェクト(Sbrsオブジェクト)
    */
-  SBRScript.parse = function(sbrScriptStr, sbrs) {
+  SBRScript.prototype.parse = function(sbrScriptStr, sbrs) {
 
     var sbrScriptArray;
     var measureLineCount;
@@ -309,7 +311,7 @@ var SBRScript = (function() {
    *        callback.error : 読み込み失敗時に実行する関数
    * 戻り値 : 譜面データの解析結果を格納したオブジェクト(Sbrsオブジェクト)
    */
-  SBRScript.load = function(sbrScriptUrl, async, callback) {
+  SBRScript.prototype.load = function(sbrScriptUrl, async, callback) {
 
     var xhr = new XMLHttpRequest();
     var sbrs = new Sbrs();
@@ -329,7 +331,7 @@ var SBRScript = (function() {
         // 読み込み成功
 
         // 読み込んだ譜面を解析
-        SBRScript.parse(xhr.responseText);
+        script.parse(xhr.responseText);
         if (callback && typeof callback.load === "function") {
           callback.load();
         }
@@ -359,7 +361,7 @@ var SBRScript = (function() {
               // 読み込み成功
 
               // 読み込んだ譜面を解析
-              SBRScript.parse(xhr.responseText, sbrs);
+              script.parse(xhr.responseText, sbrs);
               if (callback && typeof callback.load === "function") {
                 callback.load();
               }
@@ -389,7 +391,7 @@ var SBRScript = (function() {
    * 引数3 : 時間を確認したい拍数
    * 戻り値 : 時間(ms)
    */
-  SBRScript.getTimeFromMeasurePoint = function(sbrs, measure, point) {
+  SBRScript.prototype.getTimeFromMeasurePoint = function(sbrs, measure, point) {
 
     var bpmIndex = -1;
     var time = 0.0;
@@ -440,7 +442,7 @@ var SBRScript = (function() {
    * 引数2 : 時間(ms)
    * 戻り値 : 小節と拍数を格納したオブジェクト({measure:value, point:value})
    */
-  SBRScript.getMeasurePointFromTime = function(sbrs, time) {
+  SBRScript.prototype.getMeasurePointFromTime = function(sbrs, time) {
 
     var measureIndex = sbrs.measureCount - 1;
     var measureValue = sbrs.measureCount;
@@ -518,7 +520,7 @@ var SBRScript = (function() {
    * 引数2 : BPMを確認したい時間
    * 戻り値 : BPM
    */
-  SBRScript.getBpmFromTime = function(sbrs, time) {
+  SBRScript.prototype.getBpmFromTime = function(sbrs, time) {
 
     var bpm = DEFAULT_BPM;
     var i, iLen;
@@ -715,8 +717,8 @@ var SBRScript = (function() {
             point = pointInit;
             while (true) {
 
-              time = SBRScript.getTimeFromMeasurePoint(sbrs, measure, point);
-              bpm = SBRScript.getBpmFromTime(sbrs, time);
+              time = script.getTimeFromMeasurePoint(sbrs, measure, point);
+              bpm = script.getBpmFromTime(sbrs, time);
               bpmTmp = sbrs.bpmHalfMode ? bpm / 2 : bpm;
 
               if (point > pointTarget) {
@@ -864,5 +866,5 @@ var SBRScript = (function() {
     }
   }
 
-  return SBRScript;
+  return script;
 }());
