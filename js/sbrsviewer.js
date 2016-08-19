@@ -258,8 +258,10 @@ var SBRSViewer = (function() {
       draw();
       if (e.target.checked) {
         document.getElementById('scoreboost-count-item').style.display = 'inline';
+        document.getElementById('scroll-speed-item').style.display = 'inline';
       } else {
         document.getElementById('scoreboost-count-item').style.display = 'none';
+        document.getElementById('scroll-speed-item').style.display = 'none';
       }
     });
 
