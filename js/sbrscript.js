@@ -1,5 +1,6 @@
 // ver 1.2.0
 var SBRScript = (function() {
+  'use strict';
 
   var script = new SBRScript();
 
@@ -111,6 +112,7 @@ var SBRScript = (function() {
     var type, typeTmp;
     var i, iLen;
     var loop;
+    var measure;
     var measureS = DEFAULT_MEASURE_S;
     var measureB = DEFAULT_MEASURE_B;
     var time = 0.0;

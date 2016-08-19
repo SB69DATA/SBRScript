@@ -1,5 +1,6 @@
 // ver 1.3.1
 var SBRSViewer = (function() {
+  'use strict';
 
   var viewer = new SBRSViewer();
 
@@ -720,10 +721,8 @@ var SBRSViewer = (function() {
       if (comboInfo[i].type !== 4) {
         // ロングのホールド以外
         markerComboRelation[comboInfo[i].index].index = i;
-        markerComboRelation[comboInfo[i].index].long = null;
       } else {
         // ロングのホールド
-        markerComboRelation[comboInfo[i].index].index = null;
         markerComboRelation[comboInfo[i].index].long[comboInfo[i].longIndex].index = i;
       }
     }
