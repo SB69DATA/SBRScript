@@ -183,65 +183,20 @@ var SBRSViewer = (function() {
     }
   });
 
-  // ドラッグオーバー時の処理キャンセル
-  window.addEventListener('dragover', function(e) {
-    e.preventDefault();
-  });
-
-  // sbrsファイルのドロップによる読み込み
-  window.addEventListener('drop', function(e) {
-
-    var viewElement = document.getElementById('view');
-    var file = e.dataTransfer.files[0];
-    var fr = new FileReader();
-
-    e.preventDefault();
-
-    // 1MBまで許容
-    if (file.size > 1024 * 1024) {
-      throw new Error('ファイルサイズが大きすぎます');
-    }
-
-    fr.addEventListener('load', function(e) {
-      try {
-
-        // 譜面読み込み
-        viewer.sbrs = SBRScript.parse(e.target.result);
-
-        // 譜面描画
-        draw();
-
-      } catch (ex) {
-        viewElement.innerHTML = '譜面の描画に失敗しました';
-        console.error(ex.stack);
-
-        // エラー表示用のスタイルを適用
-        addErrorStyle();
-      }
-    });
-
-    fr.readAsText(file);
-  });
-
   /**
    * イベントを登録します
    */
   function addEvent() {
 
-    var elements;
-    var i, iLen;
-
     // ステージタイプの変更
-    elements = document.getElementsByName('stage-type');
-    for (i = 0, iLen = elements.length; i < iLen; i++) {
-      elements[i].addEventListener('change', changeStageType);
-    }
+    Array.prototype.forEach.call(document.getElementsByName('stage-type'), function(element) {
+      element.addEventListener('change', changeStageType);
+    });
 
     // オプションの変更
-    elements = document.getElementsByName('option');
-    for (i = 0, iLen = elements.length; i < iLen; i++) {
-      elements[i].addEventListener('change', changeOption);
-    }
+    Array.prototype.forEach.call(document.getElementsByName('option'), function(element) {
+      element.addEventListener('change', changeOption);
+    });
 
     // フィーバーゲージがたまりやすくなるのスキル切り替え
     document.getElementById('option-skill-fever').addEventListener('change', function(e) {
@@ -345,6 +300,46 @@ var SBRSViewer = (function() {
           alert('リセットに失敗しました');
         }
       }
+    });
+
+    // ドラッグオーバー時の処理キャンセル
+    window.addEventListener('dragover', function(e) {
+      e.preventDefault();
+    });
+
+    // sbrsファイルのドロップによる読み込み
+    window.addEventListener('drop', function(e) {
+
+      var viewElement = document.getElementById('view');
+      var file = e.dataTransfer.files[0];
+      var fr = new FileReader();
+
+      e.preventDefault();
+
+      // 1MBまで許容
+      if (file.size > 1024 * 1024) {
+        throw new Error('ファイルサイズが大きすぎます');
+      }
+
+      fr.addEventListener('load', function(e) {
+        try {
+
+          // 譜面読み込み
+          viewer.sbrs = SBRScript.parse(e.target.result);
+
+          // 譜面描画
+          draw();
+
+        } catch (ex) {
+          viewElement.innerHTML = '譜面の描画に失敗しました';
+          console.error(ex.stack);
+
+          // エラー表示用のスタイルを適用
+          addErrorStyle();
+        }
+      });
+
+      fr.readAsText(file);
     });
   }
 
