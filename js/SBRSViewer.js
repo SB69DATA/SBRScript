@@ -22,26 +22,26 @@ var SBRSViewer = (function() {
   var DEFAULT_SCORE_BOOST_COUNT = 6; // スコアブーストのスキル所持ブロマイド数のデフォルト
   var DEFAULT_SCROLL_SPEED = 1.0; // マーカーのスクロール速度のデフォルト
 
-  var VIEWER_STORAGE_KEY = "VIEWER_OPTION_DATA"; // オプション保存用ローカルストレージのキー
-  
+  var VIEWER_STORAGE_KEY = 'VIEWER_OPTION_DATA'; // オプション保存用ローカルストレージのキー
+
   function SBRSViewer() {
     this.sbrs = null; // sbrスクリプトオブジェクト
-    this.title = "No Title ★0"; // タイトル
+    this.title = 'No Title ★0'; // タイトル
     this.info = new Info();
     this.option = new Option();
   }
 
   // 表示情報関連オブジェクト
   function Info() {
-    this.bpm = "-"; // BPM
-    this.combo = "-"; // COMBO数理論値
-    this.marker = "-"; // マーカー数
-    this.fevercombo = "-"; // フィーバー中のコンボ数
-    this.fevergauge = "-"; // フィーバーゲージの長さ
-    this.bossattack = "-"; // ボスの攻撃回数
-    this.playercombo = "-"; // プレイヤー攻撃中のコンボ数
-    this.bosscombo = "-"; // ボス攻撃中のコンボ数
-    this.time = "-"; // 演奏時間
+    this.bpm = '-'; // BPM
+    this.combo = '-'; // COMBO数理論値
+    this.marker = '-'; // マーカー数
+    this.fevercombo = '-'; // フィーバー中のコンボ数
+    this.fevergauge = '-'; // フィーバーゲージの長さ
+    this.bossattack = '-'; // ボスの攻撃回数
+    this.playercombo = '-'; // プレイヤー攻撃中のコンボ数
+    this.bosscombo = '-'; // ボス攻撃中のコンボ数
+    this.time = '-'; // 演奏時間
   }
 
   // 表示設定関連オブジェクト
@@ -53,7 +53,7 @@ var SBRSViewer = (function() {
     this.fontSize = DEFAULT_FONT_SIZE; // フォントの大きさ
     this.startOffset = DEFAULT_START_OFFSET; // 演奏開始から1小節目が流れてくるまでの時間
     this.longMarkerFastTap = DEFAULT_LONG_MARKER_FAST_TAP; // ロングマーカーの強調表示設定
-    this.stageType = "score"; // 選択中のステージタイプ
+    this.stageType = 'score'; // 選択中のステージタイプ
     this.feverGaugeHigh = false; // フィーバーゲージがたまりやすくなるのスキルの使用有無
     this.bossAttackFrequently = false; // ボスの攻撃頻度を下げるのスキルの使用有無
     this.bossAttackShort = false; // ボスの攻撃時間が短くなるのスキルの使用有無
@@ -96,7 +96,7 @@ var SBRSViewer = (function() {
   // 対応チェック
   if (!window.addEventListener) {
     window.onload = function() {
-      document.getElementById("view").innerHTML = "このページはご利用中のブラウザに対応していません";
+      document.getElementById('view').innerHTML = 'このページはご利用中のブラウザに対応していません';
 
       // エラー表示用のスタイルを適用
       addErrorStyle();
@@ -104,9 +104,9 @@ var SBRSViewer = (function() {
     return;
   }
 
-  window.addEventListener("DOMContentLoaded", function() {
+  window.addEventListener('DOMContentLoaded', function() {
 
-    var viewElement = document.getElementById("view");
+    var viewElement = document.getElementById('view');
     var sbrsPath;
 
     try {
@@ -126,7 +126,7 @@ var SBRSViewer = (function() {
             draw();
 
           } catch (e) {
-            viewElement.innerHTML = "譜面の描画に失敗しました";
+            viewElement.innerHTML = '譜面の描画に失敗しました';
             console.error(e.stack);
 
             // エラー表示用のスタイルを適用
@@ -135,7 +135,7 @@ var SBRSViewer = (function() {
         },
         // 読み込み失敗
         error: function() {
-          viewElement.innerHTML = "読み込みに失敗しました(load:" + decodeURI(sbrsPath) + ")";
+          viewElement.innerHTML = '読み込みに失敗しました(load:' + decodeURI(sbrsPath) + ')';
 
           // エラー表示用のスタイルを適用
           addErrorStyle();
@@ -152,7 +152,7 @@ var SBRSViewer = (function() {
       loadLocalStorageOption();
 
     } catch (e) {
-      viewElement.innerHTML = "パラメータエラー";
+      viewElement.innerHTML = 'パラメータエラー';
       console.error(e);
 
       // エラー表示用のスタイルを適用
@@ -161,14 +161,14 @@ var SBRSViewer = (function() {
   });
 
   // ドラッグオーバー時の処理キャンセル
-  window.addEventListener("dragover", function(e) {
+  window.addEventListener('dragover', function(e) {
     e.preventDefault();
   });
 
   // sbrsファイルのドロップによる読み込み
-  window.addEventListener("drop", function(e) {
+  window.addEventListener('drop', function(e) {
 
-    var viewElement = document.getElementById("view");
+    var viewElement = document.getElementById('view');
     var file = e.dataTransfer.files[0];
     var fr = new FileReader();
 
@@ -176,10 +176,10 @@ var SBRSViewer = (function() {
 
     // 1MBまで許容
     if (file.size > 1024 * 1024) {
-      throw new Error("ファイルサイズが大きすぎます");
+      throw new Error('ファイルサイズが大きすぎます');
     }
 
-    fr.addEventListener("load", function(e) {
+    fr.addEventListener('load', function(e) {
       try {
 
         // 譜面読み込み
@@ -189,7 +189,7 @@ var SBRSViewer = (function() {
         draw();
 
       } catch (ex) {
-        viewElement.innerHTML = "譜面の描画に失敗しました";
+        viewElement.innerHTML = '譜面の描画に失敗しました';
         console.error(ex.stack);
 
         // エラー表示用のスタイルを適用
@@ -210,117 +210,117 @@ var SBRSViewer = (function() {
     var i, iLen;
 
     // ステージタイプの変更
-    elements = document.getElementsByName("stage-type");
+    elements = document.getElementsByName('stage-type');
     for (i = 0, iLen = elements.length; i < iLen; i++) {
-      elements[i].addEventListener("change", changeStageType);
+      elements[i].addEventListener('change', changeStageType);
     }
 
     // オプションの変更
-    elements = document.getElementsByName("option");
+    elements = document.getElementsByName('option');
     for (i = 0, iLen = elements.length; i < iLen; i++) {
-      elements[i].addEventListener("change", changeOption);
+      elements[i].addEventListener('change', changeOption);
     }
 
     // フィーバーゲージがたまりやすくなるのスキル切り替え
-    document.getElementById("option-skill-fever").addEventListener("change", function(e) {
+    document.getElementById('option-skill-fever').addEventListener('change', function(e) {
       viewer.option.feverGaugeHigh = e.target.checked;
       draw();
     });
 
     // ボスの攻撃頻度を下げるのスキル切り替え
-    document.getElementById("option-skill-bossattackfrequently").addEventListener("change", function(e) {
+    document.getElementById('option-skill-bossattackfrequently').addEventListener('change', function(e) {
       viewer.option.bossAttackFrequently = e.target.checked;
       draw();
     });
 
     // ボスの攻撃時間が短くなるのスキル切り替え
-    document.getElementById("option-skill-bossattackshort").addEventListener("change", function(e) {
+    document.getElementById('option-skill-bossattackshort').addEventListener('change', function(e) {
       viewer.option.bossAttackShort = e.target.checked;
       draw();
     });
 
     // レーンの幅変更
-    document.getElementById("display-lane-width").addEventListener("change", function(e) {
+    document.getElementById('display-lane-width').addEventListener('change', function(e) {
       viewer.option.laneWidth = parseInt(e.target.value);
       draw();
     });
 
     // 拍の高さ変更
-    document.getElementById("display-beat-height").addEventListener("change", function(e) {
+    document.getElementById('display-beat-height').addEventListener('change', function(e) {
       viewer.option.beatHeight = parseInt(e.target.value);
       draw();
     });
 
     // 1列の拍数変更
-    document.getElementById("display-col-beat").addEventListener("change", function(e) {
+    document.getElementById('display-col-beat').addEventListener('change', function(e) {
       viewer.option.colBeat = parseInt(e.target.value);
       draw();
     });
 
     // マーカーの大きさ変更
-    document.getElementById("display-marker-size").addEventListener("change", function(e) {
+    document.getElementById('display-marker-size').addEventListener('change', function(e) {
       viewer.option.markerSize = parseInt(e.target.value);
       draw();
     });
 
     // フォントサイズ変更
-    document.getElementById("display-font-size").addEventListener("change", function(e) {
+    document.getElementById('display-font-size').addEventListener('change', function(e) {
       viewer.option.fontSize = parseInt(e.target.value);
       draw();
     });
 
     // ロングマーカーの強調表示変更
-    document.getElementById("long-marker-fast-tap").addEventListener("change", function(e) {
+    document.getElementById('long-marker-fast-tap').addEventListener('change', function(e) {
       viewer.option.longMarkerFastTap = e.target.checked;
       draw();
     });
 
     // スコアブーストマーカーの表示変更
-    document.getElementById("scoreboost-marker").addEventListener("change", function(e) {
+    document.getElementById('scoreboost-marker').addEventListener('change', function(e) {
       viewer.option.scoreboost = e.target.checked;
       draw();
       if (e.target.checked) {
-        document.getElementById("scoreboost-count-item").style.display = "inline";
+        document.getElementById('scoreboost-count-item').style.display = 'inline';
       } else {
-        document.getElementById("scoreboost-count-item").style.display = "none";
+        document.getElementById('scoreboost-count-item').style.display = 'none';
       }
     });
 
     // スコアブーストのスキル所持ブロマイド数変更
-    document.getElementById("scoreboost-count").addEventListener("change", function(e) {
+    document.getElementById('scoreboost-count').addEventListener('change', function(e) {
       viewer.option.scoreboostCount = parseInt(e.target.value);
       draw();
     });
 
     // スクロール速度変更
-    document.getElementById("scroll-speed").addEventListener("change", function(e) {
+    document.getElementById('scroll-speed').addEventListener('change', function(e) {
       viewer.option.scrollSpeed = parseFloat(e.target.value);
       draw();
     });
 
     // オプションの保存
-    document.getElementById("option-save").addEventListener("click", function(e) {
+    document.getElementById('option-save').addEventListener('click', function(e) {
       var storage = new ScoreViewerOptionStorage(viewer.option);
-      if (confirm("表示設定の内容を保存します。よろしいですか？")) {
+      if (confirm('表示設定の内容を保存します。よろしいですか？')) {
         try {
           localStorage.setItem(VIEWER_STORAGE_KEY, JSON.stringify(storage));
-          alert("保存しました");
+          alert('保存しました');
         } catch (ex) {
-          alert("保存に失敗しました");
+          alert('保存に失敗しました');
         }
       }
     });
 
     // オプションのリセット
-    document.getElementById("option-reset").addEventListener("click", function(e) {
-      if (confirm("表示設定の内容をリセットします。よろしいですか？")) {
+    document.getElementById('option-reset').addEventListener('click', function(e) {
+      if (confirm('表示設定の内容をリセットします。よろしいですか？')) {
         try {
           localStorage.removeItem(VIEWER_STORAGE_KEY);
           loadLocalStorageOption();
           draw();
-          alert("リセットしました");
+          alert('リセットしました');
         } catch (ex) {
-          alert("リセットに失敗しました");
+          alert('リセットに失敗しました');
         }
       }
     });
@@ -358,18 +358,18 @@ var SBRSViewer = (function() {
     viewer.option.scrollSpeed = DEFAULT_SCROLL_SPEED;
 
     if (viewer.option.scoreboost) {
-      document.getElementById("scoreboost-count-item").style.display = "inline";
+      document.getElementById('scoreboost-count-item').style.display = 'inline';
     } else {
-      document.getElementById("scoreboost-count-item").style.display = "none";
+      document.getElementById('scoreboost-count-item').style.display = 'none';
     }
 
-    document.getElementById("display-lane-width").value = viewer.option.laneWidth;
-    document.getElementById("display-beat-height").value = viewer.option.beatHeight;
-    document.getElementById("display-col-beat").value = viewer.option.colBeat;
-    document.getElementById("display-marker-size").value = viewer.option.markerSize;
-    document.getElementById("display-font-size").value = viewer.option.fontSize;
-    document.getElementById("long-marker-fast-tap").checked = viewer.option.longMarkerFastTap;
-    document.getElementById("scoreboost-marker").checked = viewer.option.scoreboost;
+    document.getElementById('display-lane-width').value = viewer.option.laneWidth;
+    document.getElementById('display-beat-height').value = viewer.option.beatHeight;
+    document.getElementById('display-col-beat').value = viewer.option.colBeat;
+    document.getElementById('display-marker-size').value = viewer.option.markerSize;
+    document.getElementById('display-font-size').value = viewer.option.fontSize;
+    document.getElementById('long-marker-fast-tap').checked = viewer.option.longMarkerFastTap;
+    document.getElementById('scoreboost-marker').checked = viewer.option.scoreboost;
   }
 
   /* function resetForm
@@ -379,18 +379,18 @@ var SBRSViewer = (function() {
   function resetForm() {
 
     // ステージの種類をリセット
-    document.getElementById("stage-type-score").checked = true;
+    document.getElementById('stage-type-score').checked = true;
 
     // スキルの使用有無をリセット
-    document.getElementById("option-skill-fever").checked = false;
-    document.getElementById("option-skill-bossattackfrequently").checked = false;
-    document.getElementById("option-skill-bossattackshort").checked = false;
+    document.getElementById('option-skill-fever').checked = false;
+    document.getElementById('option-skill-bossattackfrequently').checked = false;
+    document.getElementById('option-skill-bossattackshort').checked = false;
 
     // オプションの設定選択をリセット
-    document.getElementById("option-skill").checked = true;
+    document.getElementById('option-skill').checked = true;
 
     // ロングマーカーの強調表示をリセット
-    document.getElementById("long-marker-fast-tap").checked = false;
+    document.getElementById('long-marker-fast-tap').checked = false;
 
   }
 
@@ -399,10 +399,10 @@ var SBRSViewer = (function() {
    * 戻り値 : なし
    */
   function addLoadStyle() {
-    document.getElementById("title").style.display = "block";
-    document.getElementById("info").style.display = "block";
-    document.getElementById("option").style.display = "inline-block";
-    document.body.className = "fadein";
+    document.getElementById('title').style.display = 'block';
+    document.getElementById('info').style.display = 'block';
+    document.getElementById('option').style.display = 'inline-block';
+    document.body.className = 'fadein';
   }
 
   /* function addErrorStyle
@@ -410,10 +410,10 @@ var SBRSViewer = (function() {
    * 戻り値 : なし
    */
   function addErrorStyle() {
-    document.getElementById("title").style.display = "none";
-    document.getElementById("info").style.display = "none";
-    document.getElementById("option").style.display = "none";
-    document.body.className = "fadein";
+    document.getElementById('title').style.display = 'none';
+    document.getElementById('info').style.display = 'none';
+    document.getElementById('option').style.display = 'none';
+    document.body.className = 'fadein';
   }
 
   /* function changeStageType
@@ -427,33 +427,33 @@ var SBRSViewer = (function() {
     var typeScoreStyle, typeBossStyle;
     var i, iLen;
 
-    // 選択されているステージタイプを取得("score" : スコアアタック, "boss" : BOSSバトル)
-    stageType = document.getElementById("stage-type-score").checked ? "score" : "boss";
+    // 選択されているステージタイプを取得('score' : スコアアタック, 'boss' : BOSSバトル)
+    stageType = document.getElementById('stage-type-score').checked ? 'score' : 'boss';
 
     viewer.option.stageType = stageType;
 
     // displayプロパティに適用する値を指定
     switch (stageType) {
-      case "score":
-        typeScoreStyle = "block";
-        typeBossStyle = "none";
+      case 'score':
+        typeScoreStyle = 'block';
+        typeBossStyle = 'none';
         break;
-      case "boss":
-        typeScoreStyle = "none";
-        typeBossStyle = "block";
+      case 'boss':
+        typeScoreStyle = 'none';
+        typeBossStyle = 'block';
         break;
       default:
         throw new Error();
     }
 
     // スコアアタック選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeScoreElements = document.getElementsByClassName("type-score");
+    typeScoreElements = document.getElementsByClassName('type-score');
     for (i = 0, iLen = typeScoreElements.length; i < iLen; i++) {
       typeScoreElements[i].style.display = typeScoreStyle;
     }
 
     // BOSSバトル選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeBossElements = document.getElementsByClassName("type-boss");
+    typeBossElements = document.getElementsByClassName('type-boss');
     for (i = 0, iLen = typeBossElements.length; i < iLen; i++) {
       typeBossElements[i].style.display = typeBossStyle;
     }
@@ -470,31 +470,31 @@ var SBRSViewer = (function() {
     var typeSkillStyle, typeDisplayStyle;
     var i, iLen;
 
-    // 選択されているオプションを取得("skill" : スキル設定, "display" : 表示設定)
-    selectOption = document.getElementById("option-skill").checked ? "skill" : "display";
+    // 選択されているオプションを取得('skill' : スキル設定, 'display' : 表示設定)
+    selectOption = document.getElementById('option-skill').checked ? 'skill' : 'display';
 
     // displayプロパティに適用する値を指定
     switch (selectOption) {
-      case "skill":
-        typeSkillStyle = "block";
-        typeDisplayStyle = "none";
+      case 'skill':
+        typeSkillStyle = 'block';
+        typeDisplayStyle = 'none';
         break;
-      case "display":
-        typeSkillStyle = "none";
-        typeDisplayStyle = "block";
+      case 'display':
+        typeSkillStyle = 'none';
+        typeDisplayStyle = 'block';
         break;
       default:
         throw new Error();
     }
 
     // スキル設定選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeSkillElements = document.getElementsByClassName("option-skill");
+    typeSkillElements = document.getElementsByClassName('option-skill');
     for (i = 0, iLen = typeSkillElements.length; i < iLen; i++) {
       typeSkillElements[i].style.display = typeSkillStyle;
     }
 
     // 表示設定選択時にのみ表示する要素のdisplayプロパティに値を設定
-    typeDisplayElements = document.getElementsByClassName("option-display");
+    typeDisplayElements = document.getElementsByClassName('option-display');
     for (i = 0, iLen = typeDisplayElements.length; i < iLen; i++) {
       typeDisplayElements[i].style.display = typeDisplayStyle;
     }
@@ -522,15 +522,15 @@ var SBRSViewer = (function() {
     var markerComboRelation = [];
     var i, iLen;
 
-    viewElement = document.getElementById("view");
+    viewElement = document.getElementById('view');
     laneCount = sbrs.laneCount;
 
     // viewを初期化
-    viewElement.innerHTML = "";
+    viewElement.innerHTML = '';
 
     // 列データ格納用テーブル作成
-    colTable = document.createElement("table");
-    colTr = document.createElement("tr");
+    colTable = document.createElement('table');
+    colTr = document.createElement('tr');
     colTable.appendChild(colTr);
 
     // 描画済みマーカーのindexを初期化
@@ -546,15 +546,15 @@ var SBRSViewer = (function() {
     for (measureIndex = 0, measureIndexLength = sbrs.measureCount; measureIndex < measureIndexLength;) {
 
       // 列データ作成
-      colTd = document.createElement("td");
+      colTd = document.createElement('td');
       colTr.appendChild(colTd);
 
       // 小節データ格納用テーブル作成
       // テーブルのサイズは 各レーンの幅 * レーン数 + ヘッダの幅 + ボーダー
-      measureTable = document.createElement("table");
+      measureTable = document.createElement('table');
       colTd.appendChild(measureTable);
-      measureTable.className = "col";
-      measureTable.style.width = (viewer.option.laneWidth * laneCount + 20 + 3 + (laneCount - 1)) + "px";
+      measureTable.className = 'col';
+      measureTable.style.width = (viewer.option.laneWidth * laneCount + 20 + 3 + (laneCount - 1)) + 'px';
 
       // 1列の描画済み拍数を初期化
       colDrawBeat = 0;
@@ -575,29 +575,29 @@ var SBRSViewer = (function() {
 
         // 1小節分の行作成
         measureTr = measureTable.insertRow(0);
-        measureTr.id = "measure-" + measure;
+        measureTr.id = 'measure-' + measure;
 
         // 小節のヘッダ作成
-        measureTh = document.createElement("th");
+        measureTh = document.createElement('th');
         measureTr.appendChild(measureTh);
         measureTh.innerHTML = measure;
 
         // 小節のデータ作成
         measureHeight = measureBeat * viewer.option.beatHeight - 1;
-        measureTd = document.createElement("td");
+        measureTd = document.createElement('td');
         measureTr.appendChild(measureTd);
-        measureTd.style.height = measureHeight + "px";
+        measureTd.style.height = measureHeight + 'px';
 
         // レーンの区切り線、拍子線の描画エリア作成
-        lineAriaDiv = document.createElement("div");
-        lineAriaDiv.className = "line-aria";
-        lineAriaDiv.style.height = measureHeight + "px";
+        lineAriaDiv = document.createElement('div');
+        lineAriaDiv.className = 'line-aria';
+        lineAriaDiv.style.height = measureHeight + 'px';
         measureTd.appendChild(lineAriaDiv);
 
         // マーカーの描画エリア作成
-        markerAriaDiv = document.createElement("div");
-        markerAriaDiv.className = "marker-aria";
-        markerAriaDiv.style.height = measureHeight + "px";
+        markerAriaDiv = document.createElement('div');
+        markerAriaDiv.className = 'marker-aria';
+        markerAriaDiv.style.height = measureHeight + 'px';
         measureTd.appendChild(markerAriaDiv);
 
         // フィーバ中、ボス攻撃中用のバックグラウンドを描画
@@ -886,39 +886,39 @@ var SBRSViewer = (function() {
         continue;
       }
 
-      bgDiv = document.createElement("div");
+      bgDiv = document.createElement('div');
 
       if (bgInfo.type === 1) {
         // フィーバー
-        bgDiv.className = "fever-background type-score";
-        bgDiv.style.display = viewer.option.stageType === "score" ? "block" : "none";
+        bgDiv.className = 'fever-background type-score';
+        bgDiv.style.display = viewer.option.stageType === 'score' ? 'block' : 'none';
       } else if (bgInfo.type === 2) {
         // ボス攻撃
-        bgDiv.className = "boss-background type-boss";
-        bgDiv.style.display = viewer.option.stageType === "boss" ? "block" : "none";
+        bgDiv.className = 'boss-background type-boss';
+        bgDiv.style.display = viewer.option.stageType === 'boss' ? 'block' : 'none';
       }
 
       if (measure === bgInfo.from.measure && measure === bgInfo.to.measure) {
         // 開始小節と終了小節が同じ
         top = (bgInfo.to.point * viewer.option.beatHeight * 4 / measureB);
         bottom = (bgInfo.from.point * viewer.option.beatHeight * 4 / measureB);
-        bgDiv.style.height = (top - bottom) + "px";
-        bgDiv.style.bottom = bottom + "px";
+        bgDiv.style.height = (top - bottom) + 'px';
+        bgDiv.style.bottom = bottom + 'px';
       } else if (measure === bgInfo.from.measure) {
         // 開始小節
         bottom = (bgInfo.from.point * viewer.option.beatHeight * 4 / measureB);
-        bgDiv.style.height = (measureHeight - bottom) + "px";
-        bgDiv.style.bottom = bottom + "px";
+        bgDiv.style.height = (measureHeight - bottom) + 'px';
+        bgDiv.style.bottom = bottom + 'px';
       } else if (measure === bgInfo.to.measure) {
         // 終了小節
         bottom = 0;
-        bgDiv.style.height = (bgInfo.to.point * 4 / measureB) * viewer.option.beatHeight + "px";
-        bgDiv.style.bottom = bottom + "px";
+        bgDiv.style.height = (bgInfo.to.point * 4 / measureB) * viewer.option.beatHeight + 'px';
+        bgDiv.style.bottom = bottom + 'px';
       } else if (measure > bgInfo.from.measure && measure < bgInfo.to.measure) {
         // 中間
         bottom = 0;
-        bgDiv.style.height = (measureHeight - bottom) + "px";
-        bgDiv.style.bottom = bottom + "px";
+        bgDiv.style.height = (measureHeight - bottom) + 'px';
+        bgDiv.style.bottom = bottom + 'px';
       }
 
       lineAriaDiv.appendChild(bgDiv);
@@ -955,13 +955,13 @@ var SBRSViewer = (function() {
       for (len = sbrs.markerCount; markerIndex < len && sbrs.marker[markerIndex].measure === measure; markerIndex++) {
         marker = sbrs.marker[markerIndex];
 
-        markerDiv = document.createElement("div");
-        markerDiv.style.height = (viewer.option.markerSize - 2) + "px";
-        markerDiv.style.width = (viewer.option.markerSize - 2) + "px";
-        markerDiv.style.borderRadius = (viewer.option.markerSize / 2) + "px";
-        markerDiv.style.left = ((marker.lane - 1) * (viewer.option.laneWidth + 1) + ((viewer.option.laneWidth - viewer.option.markerSize) / 2)) + "px";
-        markerDiv.style.bottom = (marker.point * viewer.option.beatHeight * 4 / measureB - (viewer.option.markerSize - 1) / 2 - 1) + "px";
-        markerDiv.style.lineHeight = (viewer.option.markerSize - 2) + "px";
+        markerDiv = document.createElement('div');
+        markerDiv.style.height = (viewer.option.markerSize - 2) + 'px';
+        markerDiv.style.width = (viewer.option.markerSize - 2) + 'px';
+        markerDiv.style.borderRadius = (viewer.option.markerSize / 2) + 'px';
+        markerDiv.style.left = ((marker.lane - 1) * (viewer.option.laneWidth + 1) + ((viewer.option.laneWidth - viewer.option.markerSize) / 2)) + 'px';
+        markerDiv.style.bottom = (marker.point * viewer.option.beatHeight * 4 / measureB - (viewer.option.markerSize - 1) / 2 - 1) + 'px';
+        markerDiv.style.lineHeight = (viewer.option.markerSize - 2) + 'px';
 
         comboInfoIndex = markerComboRelation[markerIndex].index;
 
@@ -969,28 +969,28 @@ var SBRSViewer = (function() {
           case 1:
             // 通常マーカー
             if (comboInfo[comboInfoIndex].skill === 1 && option.scoreboost) {
-              markerDiv.className = "normal-marker skill-scoreboost";
+              markerDiv.className = 'normal-marker skill-scoreboost';
             } else {
-              markerDiv.className = "normal-marker";
+              markerDiv.className = 'normal-marker';
             }
             markerDiv.style.zIndex = 200 + len - markerIndex;
             break;
           case 2:
             // ロング開始
             if (viewer.option.longMarkerFastTap && (marker.point + 0.125) % 1 <= 0.125) {
-              markerDiv.className = "long-marker emphasis";
+              markerDiv.className = 'long-marker emphasis';
             } else {
-              markerDiv.className = "long-marker";
+              markerDiv.className = 'long-marker';
             }
             markerDiv.style.zIndex = 300 + len - markerIndex;
 
-            markerValueDiv = document.createElement("div");
-            markerValueDiv.className = "value";
+            markerValueDiv = document.createElement('div');
+            markerValueDiv.className = 'value';
             markerDiv.appendChild(markerValueDiv);
             markerValueDiv.innerHTML = 2 + marker.long.length;
-            markerValueDiv.style.webkitTransform = "scale(" + (viewer.option.fontSize / 10) + ")";
-            markerValueDiv.style.transform = "scale(" + (viewer.option.fontSize / 10) + ")";
-            markerValueDiv.style.left = (-20 + 0.5 + (viewer.option.markerSize - 2) / 2) + "px";
+            markerValueDiv.style.webkitTransform = 'scale(' + (viewer.option.fontSize / 10) + ')';
+            markerValueDiv.style.transform = 'scale(' + (viewer.option.fontSize / 10) + ')';
+            markerValueDiv.style.left = (-20 + 0.5 + (viewer.option.markerSize - 2) / 2) + 'px';
 
             longMakrerInfo[marker.lane - 1] = {
               start: {
@@ -1013,9 +1013,9 @@ var SBRSViewer = (function() {
           case 3:
             // ロング終了
             if (viewer.option.longMarkerFastTap && ((marker.point % 1 > 0 && marker.point % 1 <= 0.25) || marker.longEndCountFlag)) {
-              markerDiv.className = "long-marker emphasis";
+              markerDiv.className = 'long-marker emphasis';
             } else {
-              markerDiv.className = "long-marker";
+              markerDiv.className = 'long-marker';
             }
             markerDiv.style.zIndex = 100 + len - markerIndex;
             break;
@@ -1065,17 +1065,17 @@ var SBRSViewer = (function() {
             toY = longMarkerInfo[i].end.point * 4 / measureB * viewer.option.beatHeight;
           }
 
-          markerDiv = document.createElement("div");
-          markerDiv.className = "long-line";
-          markerDiv.style.height = Math.ceil(toY - fromY + 1) + "px";
+          markerDiv = document.createElement('div');
+          markerDiv.className = 'long-line';
+          markerDiv.style.height = Math.ceil(toY - fromY + 1) + 'px';
           markerDiv.style.width = longMarkerInfo[i].style.width;
           markerDiv.style.left = longMarkerInfo[i].style.left;
 
           if (colDrawBeat === 0) {
             // 列の1小節目はbottomの位置を1px高めに
-            markerDiv.style.bottom = Math.floor(fromY - 0) + "px";
+            markerDiv.style.bottom = Math.floor(fromY - 0) + 'px';
           } else {
-            markerDiv.style.bottom = Math.floor(fromY - 1) + "px";
+            markerDiv.style.bottom = Math.floor(fromY - 1) + 'px';
           }
 
           markerAriaDiv.appendChild(markerDiv);
@@ -1110,25 +1110,25 @@ var SBRSViewer = (function() {
 
     // 拍子の線
     for (i = 1, iLen = measureS; i < iLen; i++) {
-      lineDiv = document.createElement("div");
-      lineDiv.className = "beat-line";
-      lineDiv.style.bottom = (beatHeight * i - 1) + "px";
+      lineDiv = document.createElement('div');
+      lineDiv.className = 'beat-line';
+      lineDiv.style.bottom = (beatHeight * i - 1) + 'px';
       lineAriaDiv.appendChild(lineDiv);
     }
 
     // 拍子の線2
     for (i = 0, iLen = measureS; i < iLen; i++) {
-      lineDiv = document.createElement("div");
-      lineDiv.className = "beat-subline";
-      lineDiv.style.bottom = (beatHeight * (i + 0.5) - 1) + "px";
+      lineDiv = document.createElement('div');
+      lineDiv.className = 'beat-subline';
+      lineDiv.style.bottom = (beatHeight * (i + 0.5) - 1) + 'px';
       lineAriaDiv.appendChild(lineDiv);
     }
 
     // レーンの線
     for (i = 1, iLen = laneCount; i < iLen; i++) {
-      lineDiv = document.createElement("div");
-      lineDiv.className = "lane-line";
-      lineDiv.style.left = ((viewer.option.laneWidth + 1) * i + -1) + "px";
+      lineDiv = document.createElement('div');
+      lineDiv.className = 'lane-line';
+      lineDiv.style.left = ((viewer.option.laneWidth + 1) * i + -1) + 'px';
       lineAriaDiv.appendChild(lineDiv);
     }
   }
@@ -1143,13 +1143,13 @@ var SBRSViewer = (function() {
     var bpmMagnification = sbrs.bpmHalfMode ? 0.5 : 1;
 
     // タイトル取得
-    viewer.title = viewer.sbrs.title + " ★" + viewer.sbrs.level;
+    viewer.title = viewer.sbrs.title + ' ★' + viewer.sbrs.level;
 
     // BPM取得
     if (sbrs.bpmCount === 1) {
       viewer.info.bpm = Math.round(sbrs.maxBpm * bpmMagnification);
     } else {
-      viewer.info.bpm = Math.roundeInt(sbrs.minBpm * bpmMagnification) + " - " + Math.round(sbrs.maxBpm * bpmMagnification);
+      viewer.info.bpm = Math.roundeInt(sbrs.minBpm * bpmMagnification) + ' - ' + Math.round(sbrs.maxBpm * bpmMagnification);
     }
 
     // コンボ数取得
@@ -1164,17 +1164,17 @@ var SBRSViewer = (function() {
     // 演奏時間取得
     viewer.info.time = Math.round(sbrs.endTime / 1000);
 
-    document.title = viewer.title + " | SB69 Score Viewer";
-    document.querySelector("#title .value").innerHTML = viewer.title;
-    document.querySelector("#info-bpm .value").innerHTML = viewer.info.bpm;
-    document.querySelector("#info-combo .value").innerHTML = viewer.info.combo;
-    document.querySelector("#info-marker .value").innerHTML = viewer.info.marker;
-    document.querySelector("#info-fevercombo .value").innerHTML = viewer.info.fevercombo;
-    document.querySelector("#info-fevergauge .value").innerHTML = viewer.info.fevergauge;
-    document.querySelector("#info-bossattack .value").innerHTML = viewer.info.bossattack;
-    document.querySelector("#info-playercombo .value").innerHTML = viewer.info.playercombo;
-    document.querySelector("#info-bosscombo .value").innerHTML = viewer.info.bosscombo;
-    document.querySelector("#info-time .value").innerHTML = viewer.info.time;
+    document.title = viewer.title + ' | SB69 Score Viewer';
+    document.querySelector('#title .value').innerHTML = viewer.title;
+    document.querySelector('#info-bpm .value').innerHTML = viewer.info.bpm;
+    document.querySelector('#info-combo .value').innerHTML = viewer.info.combo;
+    document.querySelector('#info-marker .value').innerHTML = viewer.info.marker;
+    document.querySelector('#info-fevercombo .value').innerHTML = viewer.info.fevercombo;
+    document.querySelector('#info-fevergauge .value').innerHTML = viewer.info.fevergauge;
+    document.querySelector('#info-bossattack .value').innerHTML = viewer.info.bossattack;
+    document.querySelector('#info-playercombo .value').innerHTML = viewer.info.playercombo;
+    document.querySelector('#info-bosscombo .value').innerHTML = viewer.info.bosscombo;
+    document.querySelector('#info-time .value').innerHTML = viewer.info.time;
   }
 
   return viewer;

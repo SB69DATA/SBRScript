@@ -12,11 +12,11 @@ var SBRScript = (function() {
 
   // Sbrsオブジェクト
   function Sbrs() {
-    this.url = ""; // sbrsファイルのURL
-    this.title = "No Title"; // 曲名
-    this.artist = ""; // アーティスト
-    this.sound = ""; // 音声ファイル名
-    this.soundUrl = ""; // 音声ファイルのURL
+    this.url = ''; // sbrsファイルのURL
+    this.title = 'No Title'; // 曲名
+    this.artist = ''; // アーティスト
+    this.sound = ''; // 音声ファイル名
+    this.soundUrl = ''; // 音声ファイルのURL
     this.soundVolume = 1.0; // 音声ファイルの音量(0.0～1.0)
     this.offset = 0.0; // 再生開始タイミング(ms)
     this.level = 0; // 難易度
@@ -129,47 +129,47 @@ var SBRScript = (function() {
       measureLineCount = getMeasureLineCount(sbrScriptArray, i);
 
       // 1小節のループ
-      for (measureLineIndex = 0; i < iLen && sbrScriptArray[i].charAt(0) !== ","; i++) {
+      for (measureLineIndex = 0; i < iLen && sbrScriptArray[i].charAt(0) !== ','; i++) {
 
         line = sbrScriptArray[i];
         point = measureLineIndex / measureLineCount * measureS;
 
-        if (line.charAt(0) === "#") {
+        if (line.charAt(0) === '#') {
           // 命令行の処理
 
           if (line.match(/^#TITLE:/i) !== null) {
             // 曲名を取得
-            sbrs.title = line.slice("#TITLE:".length);
+            sbrs.title = line.slice('#TITLE:'.length);
           } else if (line.match(/^#ARTIST:/i) !== null) {
             // アーティストを取得
-            sbrs.artist = line.slice("#ARTIST:".length);
+            sbrs.artist = line.slice('#ARTIST:'.length);
           } else if (line.match(/^#SOUND:/i) !== null) {
             // 音声ファイル名を取得
-            sbrs.sound = line.slice("#SOUND:".length);
-            if (sbrs.url !== "" && sbrs.url.lastIndexOf("/") !== -1) {
-              sbrs.soundUrl = sbrs.url.substr(0, sbrs.url.lastIndexOf("/") + 1) + sbrs.sound;
+            sbrs.sound = line.slice('#SOUND:'.length);
+            if (sbrs.url !== '' && sbrs.url.lastIndexOf('/') !== -1) {
+              sbrs.soundUrl = sbrs.url.substr(0, sbrs.url.lastIndexOf('/') + 1) + sbrs.sound;
             } else {
               sbrs.soundUrl = sbrs.sound;
             }
           } else if (line.match(/^#SOUNDVOLUME:/i) !== null) {
             // 音声ファイルの音量を取得
-            sbrs.soundVolume = parseFloat(line.slice("#SOUNDVOLUME:".length));
+            sbrs.soundVolume = parseFloat(line.slice('#SOUNDVOLUME:'.length));
           } else if (line.match(/^#OFFSET:/i) !== null) {
             // 再生開始タイミングを取得
-            sbrs.offset = parseFloat(line.slice("#OFFSET:".length));
+            sbrs.offset = parseFloat(line.slice('#OFFSET:'.length));
           } else if (line.match(/^#LEVEL:/i) !== null) {
             // 難易度を取得
-            sbrs.level = parseInt(line.slice("#LEVEL:".length));
+            sbrs.level = parseInt(line.slice('#LEVEL:'.length));
           } else if (line.match(/^#SCROLL:/i) !== null) {
             // スクロール速度を取得
-            scroll = parseFloat(line.slice("#SCROLL:".length));
+            scroll = parseFloat(line.slice('#SCROLL:'.length));
           } else if (line.match(/^#JUDGERANGE:/i) !== null) {
             // 判定範囲を取得
-            sbrs.judgeRange = parseFloat(line.slice("#JUDGERANGE:".length));
+            sbrs.judgeRange = parseFloat(line.slice('#JUDGERANGE:'.length));
           } else if (line.match(/^#BPM:/i) !== null) {
             // BPMを取得
             obj = new Bpm();
-            obj.value = parseFloat(line.slice("#BPM:".length));
+            obj.value = parseFloat(line.slice('#BPM:'.length));
             obj.measure = measure;
             obj.point = point;
             obj.time = time;
@@ -180,7 +180,7 @@ var SBRScript = (function() {
             bpm = obj.value;
           } else if (line.match(/^#BPMHALFMODE:/i) !== null) {
             // BPMの表記を取得
-            value = parseInt(line.slice("#BPMHALFMODE:".length));
+            value = parseInt(line.slice('#BPMHALFMODE:'.length));
             if (value === 0) {
               sbrs.bpmHalfMode = false;
             } else {
@@ -188,7 +188,7 @@ var SBRScript = (function() {
             }
           } else if (line.match(/^#STAGE:/i) !== null) {
             // STAGEを取得
-            value = line.slice("#STAGE:".length).match(/([\d\-\.]+),([\d\-\.]+),([\d\-\.]+)/);
+            value = line.slice('#STAGE:'.length).match(/([\d\-\.]+),([\d\-\.]+),([\d\-\.]+)/);
             if (value !== null) {
               obj = new Stage();
               obj.x = stageValue[1];
@@ -199,7 +199,7 @@ var SBRScript = (function() {
           } else if (line.match(/^#MEASURE:/i) !== null) {
             // 拍子を取得
             if (measureLineIndex === 0) {
-              value = line.slice("#MEASURE:".length).match(/([\d\-\.]+)\/([\d\-\.]+)/);
+              value = line.slice('#MEASURE:'.length).match(/([\d\-\.]+)\/([\d\-\.]+)/);
               if (value !== null) {
                 // 小数点以下は切り捨て
                 measureS = parseInt(value[1]);
@@ -318,9 +318,9 @@ var SBRScript = (function() {
 
     sbrs.url = sbrScriptUrl;
 
-    xhr.open("get", sbrScriptUrl, async);
+    xhr.open('get', sbrScriptUrl, async);
     if (xhr.overrideMimeType) {
-      xhr.overrideMimeType("text/plain");
+      xhr.overrideMimeType('text/plain');
     }
 
     // 同期読み込み
@@ -332,13 +332,13 @@ var SBRScript = (function() {
 
         // 読み込んだ譜面を解析
         script.parse(xhr.responseText);
-        if (callback && typeof callback.load === "function") {
+        if (callback && typeof callback.load === 'function') {
           callback.load();
         }
       } else {
         // 読み込み失敗
-        console.error("譜面の読み込みに失敗しました(url:%s)", decodeURI(sbrScriptUrl));
-        if (callback && typeof callback.error === "function") {
+        console.error('譜面の読み込みに失敗しました(url:%s)', decodeURI(sbrScriptUrl));
+        if (callback && typeof callback.error === 'function') {
           callback.error();
         }
       }
@@ -346,7 +346,7 @@ var SBRScript = (function() {
       // 非同期読み込み
     } else {
 
-      xhr.addEventListener("readystatechange", function() {
+      xhr.addEventListener('readystatechange', function() {
         sbrs.readyState = xhr.readyState;
         switch (xhr.readyState) {
           case 3:
@@ -362,13 +362,13 @@ var SBRScript = (function() {
 
               // 読み込んだ譜面を解析
               script.parse(xhr.responseText, sbrs);
-              if (callback && typeof callback.load === "function") {
+              if (callback && typeof callback.load === 'function') {
                 callback.load();
               }
             } else {
               // 読み込み失敗
-              console.error("譜面の読み込みに失敗しました(url:%s)", decodeURI(sbrScriptUrl));
-              if (callback && typeof callback.error === "function") {
+              console.error('譜面の読み込みに失敗しました(url:%s)', decodeURI(sbrScriptUrl));
+              if (callback && typeof callback.error === 'function') {
                 callback.error();
               }
             }
@@ -545,8 +545,8 @@ var SBRScript = (function() {
 
     for (i = 0, iLen = sbrScriptArray.length; i < iLen; i++) {
       line = sbrScriptArray[i];
-      if (line.charAt(0) === "#" && line.match(/^#LANE:/i) !== null) {
-        laneCount = parseInt(line.slice("#LANE:".length));
+      if (line.charAt(0) === '#' && line.match(/^#LANE:/i) !== null) {
+        laneCount = parseInt(line.slice('#LANE:'.length));
       }
     }
 
@@ -563,8 +563,8 @@ var SBRScript = (function() {
 
     var blankLane = (function() {
 
-      var blankChar = "0";
-      var blankLane = "";
+      var blankChar = '0';
+      var blankLane = '';
       var i, iLen;
 
       for (i = 0; i < laneCount; i++) {
@@ -584,14 +584,14 @@ var SBRScript = (function() {
       line = sbrScriptArray[i];
 
       // コメント除去
-      if (line.indexOf("//") !== -1) {
-        line = line.substring(0, line.indexOf("//"));
+      if (line.indexOf('//') !== -1) {
+        line = line.substring(0, line.indexOf('//'));
       }
 
       // 想定外の文字除去
-      if (line.charAt(0) !== "#") {
+      if (line.charAt(0) !== '#') {
         // 数字とコロン以外を除去
-        line = line.replace(/[^0-3,]/g, "");
+        line = line.replace(/[^0-3,]/g, '');
       }
 
       // 空行除去
@@ -599,12 +599,12 @@ var SBRScript = (function() {
         sbrScriptArray.splice(i, 1);
         i--;
         iLen--;
-      } else if (line.charAt(0) !== "#") {
+      } else if (line.charAt(0) !== '#') {
 
         // 行頭以外のカンマを次の行に
-        if (line.substr(1).indexOf(",") !== -1) {
-          commaIndex = line.substr(1).indexOf(",") + 1;
-          sbrScriptArray.splice(i + 1, 0, ",");
+        if (line.substr(1).indexOf(',') !== -1) {
+          commaIndex = line.substr(1).indexOf(',') + 1;
+          sbrScriptArray.splice(i + 1, 0, ',');
           iLen++;
           if (line.substr(commaIndex).length !== 1) {
             sbrScriptArray.splice(i + 2, 0, line.substr(commaIndex + 1));
@@ -627,7 +627,7 @@ var SBRScript = (function() {
           line = (line + blankLane).substring(0, laneCount);
         }
 
-        if (line.charAt(0) !== ",") {
+        if (line.charAt(0) !== ',') {
           lineCount++;
           sbrScriptArray[i] = line;
         } else {
@@ -659,10 +659,10 @@ var SBRScript = (function() {
 
     for (i = index, iLen = sbrScriptArray.length; i < iLen; i++) {
       line = sbrScriptArray[i];
-      if (line.charAt(0) === ",") {
+      if (line.charAt(0) === ',') {
         break;
       }
-      if (line.charAt(0) !== "#") {
+      if (line.charAt(0) !== '#') {
         measureCount++;
       }
     }
@@ -760,7 +760,7 @@ var SBRScript = (function() {
         } else {
           // ロングマーカーの終端が見つからなかった場合、通常のマーカーとして扱う
           marker.type = 1;
-          console.warn("ロングマーカーの終端情報が見つかりませんでした(%s小節, %s拍目)", marker.measure, marker.point);
+          console.warn('ロングマーカーの終端情報が見つかりませんでした(%s小節, %s拍目)', marker.measure, marker.point);
         }
       }
     }
