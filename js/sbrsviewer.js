@@ -438,9 +438,7 @@ var SBRSViewer = (function() {
   function changeStageType() {
 
     var stageType;
-    var typeScoreElements, typeBossElements;
     var typeScoreStyle, typeBossStyle;
-    var i, iLen;
 
     // 選択されているステージタイプを取得('score' : スコアアタック, 'boss' : BOSSバトル)
     stageType = document.getElementById('stage-type-score').checked ? 'score' : 'boss';
@@ -478,9 +476,7 @@ var SBRSViewer = (function() {
   function changeOption() {
 
     var selectOption;
-    var typeSkillElements, typeDisplayElements;
     var typeSkillStyle, typeDisplayStyle;
-    var i, iLen;
 
     // 選択されているオプションを取得('skill' : スキル設定, 'display' : 表示設定)
     selectOption = document.getElementById('option-skill').checked ? 'skill' : 'display';
@@ -529,7 +525,6 @@ var SBRSViewer = (function() {
     var longMakrerInfo = [];
     var backgroundInfo = [];
     var markerComboRelation = [];
-    var i, iLen;
 
     viewElement = document.getElementById('view');
     laneCount = sbrs.laneCount;
