@@ -24,14 +24,21 @@ var SBRSViewer = (function() {
 
   var VIEWER_STORAGE_KEY = 'VIEWER_OPTION_DATA'; // オプション保存用ローカルストレージのキー
 
+  /**
+   * ビュワーの情報を保持します
+   * @constructor
+   */
   function SBRSViewer() {
     this.sbrs = null; // sbrスクリプトオブジェクト
     this.title = 'No Title ★0'; // タイトル
-    this.info = new Info();
-    this.option = new Option();
+    this.info = new Info(); // 譜面の情報
+    this.option = new Option(); // 表示オプション
   }
 
-  // 表示情報関連オブジェクト
+  /**
+   * 譜面の情報を保持します
+   * @constructor
+   */
   function Info() {
     this.bpm = '-'; // BPM
     this.combo = '-'; // COMBO数理論値
@@ -44,7 +51,10 @@ var SBRSViewer = (function() {
     this.time = '-'; // 演奏時間
   }
 
-  // 表示設定関連オブジェクト
+  /**
+   * 表示オプションを保持します
+   * @constructor
+   */
   function Option() {
     this.beatHeight = DEFAULT_BEAT_HEIGHT; // 拍の高さ
     this.laneWidth = DEFAULT_LANE_WIDTH; // レーンの幅
@@ -62,7 +72,10 @@ var SBRSViewer = (function() {
     this.scrollSpeed = 1.0; // マーカーのスクロール速度
   }
 
-  // コンボ情報オブジェクト
+  /**
+   * コンボ毎の情報を保持します
+   * @constructor
+   */
   function ComboInfo() {
     this.index = 0; // 対応するマーカーオブジェクトのインデックス
     this.longIndex = 0; // 対応するロングマーカーオブジェクトのインデックス
@@ -76,13 +89,22 @@ var SBRSViewer = (function() {
     this.skill = 0; // スキル(0:なし 1:スコアブースト)
   }
 
-  // マーカー数とコンボ数の関連付けオブジェクト
+  /**
+   * マーカーの情報とコンボ毎の情報の関連を保持します
+   * marker[i] = comboInfo[markerComboRelation[i].index]
+   * marker[i].long[j] = comboInfo[markerComboRelation[i].long[j].index]
+   * @constructor
+   */
   function MarkerComboRelation() {
-    this.index = 0; // 対応するコンボ情報オブジェクトのインデックス
+    this.index = 0; // コンボ毎の情報のインデックス
     this.long = null; // ローングマーカーのホールド情報に対応するコンボ情報オブジェクトのインデックスを配列で格納
   }
 
-  // ローカルストレージ格納用オブジェクト
+  /**
+   * ローカルストレージに格納する情報を保持します
+   * @constructor
+   * @param {Object} option - 表示オプション
+   */
   function ScoreViewerOptionStorage(option) {
     this.beatHeight = option.beatHeight;
     this.laneWidth = option.laneWidth;
@@ -200,9 +222,8 @@ var SBRSViewer = (function() {
     fr.readAsText(file);
   });
 
-  /* function addEvent
+  /**
    * イベントを登録します
-   * 戻り値 : なし
    */
   function addEvent() {
 
@@ -326,9 +347,8 @@ var SBRSViewer = (function() {
     });
   }
 
-  /* function loadLocalStorageOption
-   * ローカルストレージに保存したオプションを読み込み、画面に反映します
-   * 戻り値 : なし
+  /**
+   * ローカルストレージから表示オプションを読み込み、画面に反映します
    */
   function loadLocalStorageOption() {
 
@@ -372,9 +392,8 @@ var SBRSViewer = (function() {
     document.getElementById('scoreboost-marker').checked = viewer.option.scoreboost;
   }
 
-  /* function resetForm
+  /**
    * フォームの選択状態をリセットします(更新してもフォームの選択がリセットされないブラウザ用)
-   * 戻り値 : なし
    */
   function resetForm() {
 
@@ -394,9 +413,8 @@ var SBRSViewer = (function() {
 
   }
 
-  /* function addLoadStyle
+  /**
    * 描画成功用のスタイルを適用します
-   * 戻り値 : なし
    */
   function addLoadStyle() {
     document.getElementById('title').style.display = 'block';
@@ -405,9 +423,8 @@ var SBRSViewer = (function() {
     document.body.className = 'fadein';
   }
 
-  /* function addErrorStyle
+  /**
    * エラー表示用のスタイルを適用します
-   * 戻り値 : なし
    */
   function addErrorStyle() {
     document.getElementById('title').style.display = 'none';
@@ -416,9 +433,8 @@ var SBRSViewer = (function() {
     document.body.className = 'fadein';
   }
 
-  /* function changeStageType
+  /**
    * ステージの種類に応じて、画面に表示する項目を変更します
-   * 戻り値 : なし
    */
   function changeStageType() {
 
@@ -459,9 +475,8 @@ var SBRSViewer = (function() {
     }
   }
 
-  /* function changeOption
+  /**
    * オプションで設定可能な項目を切り替えます
-   * 戻り値 : なし
    */
   function changeOption() {
 
@@ -500,9 +515,8 @@ var SBRSViewer = (function() {
     }
   }
 
-  /* function draw
+  /**
    * 解析した譜面データを元に、譜面を描画します
-   * 戻り値 : なし
    */
   function draw() {
 
@@ -628,11 +642,10 @@ var SBRSViewer = (function() {
     addLoadStyle();
   }
 
-  /* function initcomboInfo
-   * コンボ毎の情報を格納する配列とマーカーとコンボ情報の関連付けを行う配列の初期化します
-   * 引数1 : コンボ毎の情報を格納する配列
-   * 引数2 : コンボ情報の関連付けを格納する配列
-   * 戻り値 : なし
+  /**
+   * コンボ毎の情報を格納する配列、およびマーカー情報とコンボ情報の関連付けを行う配列を初期化します
+   * @param {ComboInfo[]} comboInfo - コンボ毎の情報を格納する配列
+   * @param {MarkerComboRelation[]} markerComboRelation - コンボ情報の関連付けを格納する配列
    */
   function initcomboInfo(comboInfo, markerComboRelation) {
 
@@ -705,8 +718,12 @@ var SBRSViewer = (function() {
     // index付与
     for (i = 0, iLen = comboInfo.length; i < iLen; i++) {
       if (comboInfo[i].type !== 4) {
+        // ロングのホールド以外
         markerComboRelation[comboInfo[i].index].index = i;
+        markerComboRelation[comboInfo[i].index].long = null;
       } else {
+        // ロングのホールド
+        markerComboRelation[comboInfo[i].index].index = null;
         markerComboRelation[comboInfo[i].index].long[comboInfo[i].longIndex].index = i;
       }
     }
@@ -731,11 +748,10 @@ var SBRSViewer = (function() {
     }
   }
 
-  /* function setBackgroundInfo
+  /**
    * フィーバーゲージ、ボス攻撃時間の情報をセットします
-   * 引数1 : フィーバーゲージ、ボス攻撃時間の情報を格納する配列
-   * 引数2 : コンボ毎の情報を格納する配列
-   * 戻り値 : なし
+   * @param {Object[]} backgroundInfo - フィーバーゲージ、ボス攻撃時間の情報を格納する配列
+   * @param {ComboInfo[]} comboInfo - コンボ毎の情報を格納する配列
    */
   function setBackgroundInfo(backgroundInfo, comboInfo) {
 
@@ -862,14 +878,13 @@ var SBRSViewer = (function() {
     viewer.info.bosscombo = bossComboCount;
   }
 
-  /* function drawBackground
+  /**
    * ラインエリアのdiv要素にフィーバー中、ボス攻撃中のバックグラウンドを追加します
-   * 引数1 : ラインdiv要素
-   * 引数2 : 現在の小節
-   * 引数3 : 現在の小節の分母
-   * 引数4 : フィーバーゲージ、ボス攻撃時間の情報を格納する配列
-   * 引数5 : 描画エリアの高さ
-   * 戻り値 : なし
+   * @param {Object} lineAriaDiv - ラインdiv要素
+   * @param {number} measure - 現在の小節
+   * @param {number} measureB - 現在の小節の分母
+   * @param {Object[]} backgroundInfo - フィーバーゲージ、ボス攻撃時間の情報を格納する配列
+   * @param {number} measureHeight - 描画エリアの高さ
    */
   function drawBackground(lineAriaDiv, measure, measureB, backgroundInfo, measureHeight) {
 
@@ -925,16 +940,16 @@ var SBRSViewer = (function() {
     }
   }
 
-  /* function drawMarker
+  /**
    * マーカーエリアのdiv要素にマーカーを追加します
-   * 引数1 : マーカーdiv要素
-   * 引数2 : 描画済みマーカーのindex
-   * 引数3 : 現在の小節
-   * 引数4 : 描画エリアの高さ
-   * 引数5 : ロングマーカーの描画情報
-   * 引数6 : コンボ毎の情報を格納する配列
-   * 引数7 : コンボ情報の関連付けを格納する配列
-   * 戻り値 : 次に処理するマーカーのインデックス
+   * @param {Object} markerAriaDiv - マーカーdiv要素
+   * @param {number} markerIndex - 描画済みマーカーのindex
+   * @param {number} measure - 現在の小節
+   * @param {number} measureHeight - 描画エリアの高さ
+   * @param {Object[]} longMakrerInfo - ロングマーカーの描画情報
+   * @param {ComboInfo[]} comboInfo - コンボ毎の情報を格納する配列
+   * @param {MarkerComboRelation[]} markerComboRelation - コンボ情報の関連付けを格納する配列
+   * @return {number} 次に処理するマーカーのインデックス
    */
   function drawMarker(markerAriaDiv, markerIndex, measure, measureHeight, longMakrerInfo, comboInfo, markerComboRelation) {
 
@@ -1030,14 +1045,13 @@ var SBRSViewer = (function() {
     return markerIndex;
   }
 
-  /* function drawLongLine
+  /**
    * マーカーエリアのdiv要素にロングマーカーの中間線を追加します
-   * 引数1 : マーカーdiv要素
-   * 引数2 : 現在の小節
-   * 引数3 : 描画エリアの高さ
-   * 引数4 : ロングマーカーの描画情報
-   * 引数5 : 1列の描画済み拍数
-   * 戻り値 : なし
+   * @param {Object} markerAriaDiv - マーカーdiv要素
+   * @param {number} measure - 現在の小節
+   * @param {number} measureHeight - 描画エリアの高さ
+   * @param {Object[]} longMakrerInfo - ロングマーカーの描画情報
+   * @param {number} colDrawBeat - 1列の描画済み拍数
    */
   function drawLongLine(markerAriaDiv, measure, measureHeight, longMarkerInfo, colDrawBeat) {
 
@@ -1093,14 +1107,13 @@ var SBRSViewer = (function() {
     }
   }
 
-  /* function drawLine
+  /**
    * ラインエリアのdiv要素に拍子線、レーンの区切り線を追加します
-   * 引数1 : ラインdiv要素
-   * 引数2 : 拍子の分子
-   * 引数3 : 拍子の分母
-   * 引数4 : レーン数
-   * 引数5 : 描画エリアの高さ
-   * 戻り値 : なし
+   * @param {Object} lineAriaDiv - ラインdiv要素
+   * @param {number} measureS - 拍子の分子
+   * @param {number} measureB - 拍子の分母
+   * @param {number} laneCount - レーン数
+   * @param {number} divHeight - 描画エリアの高さ
    */
   function drawLine(lineAriaDiv, measureS, measureB, laneCount, divHeight) {
 
@@ -1133,9 +1146,8 @@ var SBRSViewer = (function() {
     }
   }
 
-  /* function updateInfo
-   * sbrsから情報エリアに必要な値を取得、画面に反映します
-   * 戻り値 : なし
+  /**
+   * SBRスクリプトオブジェクトから情報エリアに必要な値を取得、画面に反映します
    */
   function updateInfo() {
 

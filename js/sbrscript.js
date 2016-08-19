@@ -10,7 +10,10 @@ var SBRScript = (function() {
   var DEFAULT_MEASURE_B = 4;
   var DEFAULT_SCROLL = 1.0;
 
-  // Sbrsオブジェクト
+  /**
+   * SBRスクリプトの解析結果を保持します
+   * @constructor
+   */
   function Sbrs() {
     this.url = ''; // sbrsファイルのURL
     this.title = 'No Title'; // 曲名
@@ -42,7 +45,10 @@ var SBRScript = (function() {
     this.endTime = 0.0; // 譜面の終了時間
   }
 
-  // Markerオブジェクト
+  /**
+   * マーカーの情報を保持します
+   * @constructor
+   */
   function Marker() {
     this.measure = 0; // 小節(1～n)
     this.point = 0.0; // 拍
@@ -56,7 +62,10 @@ var SBRScript = (function() {
     this.longEndCountFlag = false; // 小節線と重なるロングマーカー終端のカウントフラグ
   }
 
-  // Measureオブジェクト
+  /**
+   * 小節の情報を保持します
+   * @constructor
+   */
   function Measure() {
     this.measure = 0; // 小節(1～n)
     this.valueS = 0.0; // 拍子の分子
@@ -65,7 +74,10 @@ var SBRScript = (function() {
     this.time = 0.0; // 時間(ms)
   }
 
-  // Bpmオブジェクト
+  /**
+   * BPMの情報を保持します
+   * @constructor
+   */
   function Bpm() {
     this.measure = 0; // 小節(1～n)
     this.point = 0.0; // 拍
@@ -73,18 +85,21 @@ var SBRScript = (function() {
     this.value = 0.0; // BPMの値
   }
 
-  // Stageオブジェクト
+  /**
+   * ステージの情報を保持します
+   * @constructor
+   */
   function Stage() {
     this.x = 0; // x座標
     this.y = 0; // y座標
-    this.r = 0; // 方向点の位置
+    this.r = 0; // x,y座標から端点までの長さ
   }
 
-  /* function parse
-   * 譜面データの文字列を解析、解析結果を格納したオブジェクトを返します
-   * 引数1 : 譜面データを格納した文字列
-   * [引数2] : Sbrsオブジェクト
-   * 戻り値 : 譜面データの解析結果を格納したオブジェクト(Sbrsオブジェクト)
+  /**
+   * SBRスクリプト形式の譜面データの文字列を解析、解析結果を格納したオブジェクトを返します
+   * @param {string} - sbrScriptStr 譜面データを格納した文字列
+   * @param {Sbrs} - [sbrs] SBRスクリプトオブジェクト
+   * @return {Sbrs} SBRスクリプトオブジェクト
    */
   SBRScript.prototype.parse = function(sbrScriptStr, sbrs) {
 
@@ -302,14 +317,14 @@ var SBRScript = (function() {
     return sbrs;
   };
 
-  /* function load
-   * 指定されたURLからsbrs形式の譜面を読み込みます
-   * 引数1 : sbrスクリプトファイルのURL
-   * 引数2 : 同期読み込みフラグ(true:非同期読み込み false:同期読み込み)
-   * 引数3 : 読み込みが完了した時に呼び出すコールバック関数
-   *        callback.load  : 読み込み成功時に実行する関数
-   *        callback.error : 読み込み失敗時に実行する関数
-   * 戻り値 : 譜面データの解析結果を格納したオブジェクト(Sbrsオブジェクト)
+  /**
+   * 指定されたURLからSBRスクリプト形式の譜面を読み込み、解析結果を格納したオブジェクトを返します
+   * @param {string} sbrScriptUrl - SBRスクリプトファイルのURL
+   * @param {boolean} async - 非同期読み込みフラグ(true:非同期読み込み false:同期読み込み)
+   * @param {Object} callback - 読み込みが完了した時に呼び出すコールバック関数
+   *                 callback.load  : 読み込み成功時に実行する関数
+   *                 callback.error : 読み込み失敗時に実行する関数
+   * @return {Sbrs} SBRスクリプトオブジェクト
    */
   SBRScript.prototype.load = function(sbrScriptUrl, async, callback) {
 
@@ -384,12 +399,12 @@ var SBRScript = (function() {
     return sbrs;
   };
 
-  /* function getTimeFromMeasurePoint
+  /**
    * 小節と拍数を元に時間を取得します
-   * 引数1 : sbrsオブジェクト
-   * 引数2 : 時間を確認したい小節
-   * 引数3 : 時間を確認したい拍数
-   * 戻り値 : 時間(ms)
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {number} measure - 時間を確認したい小節
+   * @param {number} point - 時間を確認したい拍数
+   * @return {number} 時間(ms)
    */
   SBRScript.prototype.getTimeFromMeasurePoint = function(sbrs, measure, point) {
 
@@ -436,11 +451,11 @@ var SBRScript = (function() {
     return time;
   };
 
-  /* function getMeasurePointFromTime
+  /**
    * 時間から小節と拍数を取得します
-   * 引数1 : sbrsオブジェクト
-   * 引数2 : 時間(ms)
-   * 戻り値 : 小節と拍数を格納したオブジェクト({measure:value, point:value})
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {number} time - 時間(ms)
+   * @return {Object} 小節と拍数を格納したオブジェクト({measure:value, point:value})
    */
   SBRScript.prototype.getMeasurePointFromTime = function(sbrs, time) {
 
@@ -514,11 +529,11 @@ var SBRScript = (function() {
     };
   };
 
-  /* function getTimeFromMeasurePoint
+  /**
    * 時間を元にBPMを取得します
-   * 引数1 : sbrsオブジェクト
-   * 引数2 : BPMを確認したい時間
-   * 戻り値 : BPM
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {number} time - 時間(ms)
+   * @return {number} BPM
    */
   SBRScript.prototype.getBpmFromTime = function(sbrs, time) {
 
@@ -532,10 +547,10 @@ var SBRScript = (function() {
     return bpm;
   };
 
-  /* function getLaneCount
-   * 譜面のレーン数を取得します (デフォルト:3)
-   * 引数1 : 譜面データを格納した配列
-   * 戻り値 : 譜面のレーン数
+  /**
+   * 譜面のレーン数を取得します
+   * @param {string[]} sbrScriptArray - SBRスクリプト形式の譜面を格納した配列
+   * @return {number} 譜面のレーン数(デフォルト:3)
    */
   function getLaneCount(sbrScriptArray) {
 
@@ -553,11 +568,11 @@ var SBRScript = (function() {
     return laneCount;
   }
 
-  /* function scriptStrNormalization
+  /**
    * 配列に格納した譜面を正規化。コメントや異常な記述を除去します
-   * 引数1 : 譜面データを格納した配列
-   * 引数2 : 譜面データのレーン数
-   * 戻り値 : 正規化した譜面データの配列
+   * @param {string[]} - sbrScriptArray SBRスクリプト形式の譜面を格納した配列
+   * @param {number} - laneCount レーン数
+   * @return {string[]} 正規化したSBRスクリプト形式の譜面を格納した配列
    */
   function scriptStrNormalization(sbrScriptArray, laneCount) {
 
@@ -645,11 +660,11 @@ var SBRScript = (function() {
     return sbrScriptArray;
   }
 
-  /* function getMeasureLineCount
+  /**
    * インデックスで指定した小節のマーカー行の行数を取得します
-   * 引数1 : 譜面データを格納した配列
-   * 引数2 : 行数を確認したい小節の先頭行のindex
-   * 戻り値 : インデックスで指定した小節のマーカー行の行数
+   * @param {string[]} sbrScriptArray - SBRスクリプト形式の譜面を格納した配列
+   * @param {number} index - 行数を確認したい小節の先頭行のindex
+   * @return {number} indexで指定した小節のマーカー行の行数
    */
   function getMeasureLineCount(sbrScriptArray, index) {
 
@@ -669,12 +684,11 @@ var SBRScript = (function() {
     return measureCount;
   }
 
-  /* function addLongHoldData
+  /**
    * sbrs.markerにロングマーカーのホールド情報を付与します
    * 4/4拍子の場合、1小節フルのロングマーカーだと4コンボ付与
    * 7/8拍子の場合、1小節フルのロングマーカーだと7コンボ付与
-   * 引数1 : sbrsオブジェクト
-   * 戻り値 : なし
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
    */
   function addLongHoldData(sbrs) {
 
@@ -766,12 +780,12 @@ var SBRScript = (function() {
     }
   }
 
-  /* function getLongEndIndex
+  /**
    * ロングの終端のindexを取得します
-   * 引数1 : sbrsオブジェクト
-   * 引数2 : sbrs.markerのロングマーカーのindex
-   * 引数3 : sbrs.markerのロングマーカーのlane
-   * 戻り値 : ロングマーカー終端のindex(見つからない場合は-1を返す)
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @param {number} index - ロングマーカーのindex
+   * @param {number} lane - ロングマーカーのレーン
+   * @return {number} ロングマーカー終端のindex(見つからない場合は-1を返す)
    */
   function getLongEndIndex(sbrs, index, lane) {
 
@@ -794,10 +808,9 @@ var SBRScript = (function() {
     return endIndex;
   }
 
-  /* function addFeverGaugeData
+  /**
    * フィーバーゲージの長さを付与します
-   * 引数1 : sbrsオブジェクト
-   * 戻り値 : なし
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
    */
   function addFeverGaugeData(sbrs) {
 
@@ -817,10 +830,10 @@ var SBRScript = (function() {
     sbrs.feverHigh = Math.ceil(sbrs.feverGaugeLength / (4.0 * 7));
   }
 
-  /* function getComboCount
+  /**
    * コンボ数の理論値を取得します
-   * 引数1 : sbrsオブジェクト
-   * 戻り値 : コンボ数の理論値
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
+   * @return {number} コンボ数の理論値
    */
   function getComboCount(sbrs) {
 
@@ -843,10 +856,9 @@ var SBRScript = (function() {
     return count;
   }
 
-  /* function markerCount
+  /**
    * マーカーオブジェクトの数を付与します
-   * 引数1 : sbrsオブジェクト
-   * 戻り値 : なし
+   * @param {Sbrs} sbrs - SBRスクリプトオブジェクト
    */
   function addMarkerCount(sbrs) {
 
