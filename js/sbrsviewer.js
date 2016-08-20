@@ -116,72 +116,110 @@ var SBRSViewer = (function() {
     this.scoreboost = option.scoreboost;
   }
 
-  // 対応チェック
-  if (!window.addEventListener) {
-    window.onload = function() {
-      document.getElementById('view').innerHTML = 'このページはご利用中のブラウザに対応していません';
+  /**
+   * 動作環境を満たしているか確認します
+   * @return {boolean} true : 動作環境を満たす / false : 動作環境を満たさない
+   */
+  function checkEnvironment() {
 
-      // エラー表示用のスタイルを適用
-      addErrorStyle();
-    };
-    return;
+    if (!window.addEventListener) {
+      return false;
+    }
+    if (!Array.prototype.forEach) {
+      return false;
+    }
+    if (!window.addEventListener) {
+      return false;
+    }
+
+    return true;
   }
 
-  window.addEventListener('DOMContentLoaded', function() {
+  // 動作環境確認
+  if (checkEnvironment()) {
+    // 動作環境を満たす場合
 
-    var viewElement = document.getElementById('view');
-    var sbrsPath;
+    window.addEventListener('DOMContentLoaded', function() {
 
-    try {
+      var viewElement = document.getElementById('view');
+      var sbrsPath;
 
-      // パラメータから譜面のパス取得
-      sbrsPath = location.search.match(/load=([^&]*)(&|$)/)[1];
+      try {
 
-      // 譜面読み込み
-      viewer.sbrs = SBRScript.load(sbrsPath, true, {
+        // パラメータから譜面のパス取得
+        sbrsPath = location.search.match(/load=([^&]*)(&|$)/)[1];
 
-        // 読み込み成功
-        load: function() {
+        // 譜面読み込み
+        viewer.sbrs = SBRScript.load(sbrsPath, true, {
 
-          try {
+          // 読み込み成功
+          load: function() {
 
-            // 譜面描画
-            draw();
+            try {
 
-          } catch (e) {
-            viewElement.innerHTML = '譜面の描画に失敗しました';
+              // スクロール速度の値変更
+              viewer.option.scrollSpeed = viewer.sbrs.scroll[0].value;
+              document.getElementById('scroll-speed').value = ('' + (viewer.option.scrollSpeed + 0.001)).substring(0, 3);
+              console.log(('' + (viewer.option.scrollSpeed + 0.001)).substring(0, 3));
+
+              // 譜面描画
+              draw();
+
+            } catch (e) {
+
+              // 描画に失敗した場合は、画面にメッセージ表示
+              viewElement.innerHTML = '譜面の描画に失敗しました';
+              console.error(e.stack);
+
+              // エラー表示用のスタイルを適用
+              addErrorStyle();
+            }
+          },
+          // 読み込み失敗
+          error: function() {
+
+            // 読み込みに失敗した場合は、画面にメッセージ表示
+            viewElement.innerHTML = '読み込みに失敗しました(load:' + decodeURI(sbrsPath) + ')';
             console.error(e.stack);
 
             // エラー表示用のスタイルを適用
             addErrorStyle();
           }
-        },
-        // 読み込み失敗
-        error: function() {
-          viewElement.innerHTML = '読み込みに失敗しました(load:' + decodeURI(sbrsPath) + ')';
+        });
 
-          // エラー表示用のスタイルを適用
-          addErrorStyle();
-        }
-      });
+        // イベント登録
+        addEvent();
 
-      // イベント登録
-      addEvent();
+        // フォームの選択状態をリセット
+        resetForm();
 
-      // フォームの選択状態をリセット
-      resetForm();
+        // ローカルストレージに保存した表示設定を反映
+        loadLocalStorageOption();
 
-      // ローカルストレージに保存した表示設定を反映
-      loadLocalStorageOption();
+      } catch (e) {
 
-    } catch (e) {
-      viewElement.innerHTML = 'パラメータエラー';
-      console.error(e);
+        // パラメータの取得に失敗した場合は、画面にメッセージ表示
+        viewElement.innerHTML = 'パラメータエラー';
+        console.error(e.stack);
+
+        // エラー表示用のスタイルを適用
+        addErrorStyle();
+      }
+    });
+  } else {
+    // 動作環境を満たさない場合
+
+    window.onload = function() {
+
+      // 画面にメッセージ表示
+      document.getElementById('view').innerHTML = 'このページはご利用中のブラウザに対応していません';
 
       // エラー表示用のスタイルを適用
       addErrorStyle();
-    }
-  });
+    };
+
+    throw new Error('動作環境を満たしていません');
+  }
 
   /**
    * イベントを登録します

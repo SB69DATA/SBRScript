@@ -24,15 +24,16 @@ var SBRScript = (function() {
     this.soundVolume = 1.0; // 音声ファイルの音量(0.0～1.0)
     this.offset = 0.0; // 再生開始タイミング(ms)
     this.level = 0; // 難易度
-    this.bpm = []; // BPMの情報(Bpmオブジェクト)を配列で格納
-    this.marker = []; // マーカーの情報(Markerオブジェクト)を配列で格納
-    this.measure = []; // 小節の情報(Measureオブジェクト)を配列で格納
-    this.bpmCount = 0; // BPMオブジェクト数
-    this.measureCount = 0; // 小節オブジェクト数
-    this.markerCount = 0; // マーカーオブジェクト数(ロングマーカーのホールド除く)
+    this.scroll = []; // SCROLLの情報(Scrollコンストラクタ)を配列で格納
+    this.bpm = []; // BPMの情報(Bpmコンストラクタ)を配列で格納
+    this.marker = []; // マーカーの情報(Markerコンストラクタ)を配列で格納
+    this.measure = []; // 小節の情報(Measureコンストラクタ)を配列で格納
+    this.bpmCount = 0; // BPM数
+    this.measureCount = 0; // 小節数
+    this.markerCount = 0; // マーカー数(ロングマーカーのホールド除く)
     this.bpmHalfMode = false; // BPMの表記(true:半分の値を表示, false:そのままの値を表示)
-    this.normalMarkerCount = 0; // 通常マーカーオブジェクトの数
-    this.longMarkerCount = 0; // ロングマーカーオブジェクトの数
+    this.normalMarkerCount = 0; // 通常マーカーの数
+    this.longMarkerCount = 0; // ロングマーカーの数
     this.maxBpm = 0; // BPMの最大値
     this.minBpm = 0; // BPMの最小値
     this.comboCount = 0; // コンボ数の理論値
@@ -42,7 +43,7 @@ var SBRScript = (function() {
     this.feverHigh = 0; //  Feverに必要なマーカー数(フィーバーゲージがたまりやすくなる使用時)
     this.readyState = 0; // sbrsの読み込み状態
     this.laneCount = 0; // レーン数
-    this.stage = []; // ステージの情報(Stageオブジェクト)を配列で格納
+    this.stage = []; // ステージの情報(Stageコンストラクタ)を配列で格納
     this.endTime = 0.0; // 譜面の終了時間
   }
 
@@ -73,6 +74,17 @@ var SBRScript = (function() {
     this.valueB = 0.0; // 拍子の分母
     this.scroll = 0.0; // SCROLL
     this.time = 0.0; // 時間(ms)
+  }
+
+  /**
+   * SCROLLの情報を保持します
+   * @constructor
+   */
+  function Scroll() {
+    this.measure = 0; // 小節(1～n)
+    this.point = 0.0; // 拍
+    this.time = 0.0; // 時間(ms)
+    this.value = 0.0; // SCROLLの値
   }
 
   /**
@@ -179,7 +191,15 @@ var SBRScript = (function() {
             sbrs.level = parseInt(line.slice('#LEVEL:'.length));
           } else if (line.match(/^#SCROLL:/i) !== null) {
             // スクロール速度を取得
-            scroll = parseFloat(line.slice('#SCROLL:'.length));
+            obj = new Scroll();
+            obj.value = parseFloat(line.slice('#SCROLL:'.length));
+            obj.measure = measure;
+            obj.point = point;
+            obj.time = time;
+            sbrs.scroll.push(obj);
+
+            // 現在のSCROLL設定
+            scroll = obj.value;
           } else if (line.match(/^#JUDGERANGE:/i) !== null) {
             // 判定範囲を取得
             sbrs.judgeRange = parseFloat(line.slice('#JUDGERANGE:'.length));
@@ -278,8 +298,18 @@ var SBRScript = (function() {
       lastTime = time;
     }
 
+    // #SCROLLの記載なし
+    if (sbrs.scroll.length === 0) {
+      obj = new Scroll();
+      obj.value = scroll;
+      obj.measure = 1;
+      obj.point = 0;
+      obj.time = 0;
+      sbrs.scroll.push(obj);
+    }
+
     // #BPMの記載なし
-    if (bpmValueArray.length === 0) {
+    if (sbrs.bpm.length === 0) {
       obj = new Bpm();
       obj.value = bpm;
       obj.measure = 1;
