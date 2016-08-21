@@ -5,7 +5,7 @@ var SBRSViewer = (function() {
   var viewer = new SBRSViewer();
 
   var PLAYER_ATTACK_TIME = 10000; // プレイヤーの攻撃時間
-  var PLAYER_LONG_ATTACK_TIME = 22000; // ボウスの攻撃頻度を下げる使用時のプレイヤーの攻撃時間
+  var PLAYER_LONG_ATTACK_TIME = 22000; // ボスの攻撃頻度を下げる使用時のプレイヤーの攻撃時間
   var BOSS_ATTACK_TIME = 8500; // ボスの攻撃時間
   var BOSS_SHORT_ATTACK_TIME = 7000; // ボスの攻撃時間が短くなる使用時のボスの攻撃時間
   var FEVER_TIME = 10000; // フィーバータイムの時間

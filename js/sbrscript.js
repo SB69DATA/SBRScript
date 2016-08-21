@@ -463,11 +463,11 @@ var SBRScript = (function() {
     }
 
     if (bpmIndex === -1) {
-      // 該当小節にBPM変更あり
+      // 該当小節にBPM変更なし
 
       time = measureObj.time + (240000.0 / bpm * (measureObj.valueS / measureObj.valueB) * (point / measureObj.valueS));
     } else {
-      // 該当小節にBPM変更なし
+      // 該当小節にBPM変更あり
 
       bpmObj = sbrs.bpm[bpmIndex];
       if (bpmObj.point === point) {
