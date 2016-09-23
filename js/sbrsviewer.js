@@ -639,6 +639,7 @@ var SBRSViewer = (function() {
         markerAriaDiv = document.createElement('div');
         markerAriaDiv.className = 'marker-aria';
         markerAriaDiv.style.height = measureHeight + 'px';
+        markerAriaDiv.title = getCombo(markerIndex);
         measureTd.appendChild(markerAriaDiv);
 
         // フィーバ中、ボス攻撃中用のバックグラウンドを描画
@@ -1169,6 +1170,39 @@ var SBRSViewer = (function() {
       lineDiv.style.left = ((viewer.option.laneWidth + 1) * i + -1) + 'px';
       lineAriaDiv.appendChild(lineDiv);
     }
+  }
+
+  /**
+   * コンボ数を取得します
+   * @param {Number} markerIndex マーカーのインデックス
+   * @return {Number} コンボ数
+   */
+  function getCombo(markerIndex) {
+
+    var sbrs = viewer.sbrs;
+    var combo = 0;
+    var marker;
+    var i, iLen;
+
+    for (i = 0, iLen = sbrs.markerCount; i < iLen && i < markerIndex; i++) {
+      marker = sbrs.marker[i];
+      switch (marker.type) {
+        case 1:
+          combo++;
+          break;
+        case 2:
+          combo++;
+          combo += marker.long.length;
+          break;
+        case 3:
+          combo++;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return combo;
   }
 
   /**
