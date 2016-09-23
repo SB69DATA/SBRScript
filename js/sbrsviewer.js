@@ -1,4 +1,4 @@
-// ver 1.4.1
+// ver 1.4.3
 var SBRSViewer = (function() {
   'use strict';
 
@@ -128,7 +128,7 @@ var SBRSViewer = (function() {
     if (!Array.prototype.forEach) {
       return false;
     }
-    if (!window.addEventListener) {
+    if (!window.localStorage) {
       return false;
     }
 
